@@ -10,5 +10,5 @@ some screenshots of my st zoomed
 <img src="https://github.com/siduck76/st/blob/main/delete_this/u.png">
         
 ls-icons : https://github.com/Yash-Handa/logo-ls 
-xresources : onedark ( just xrdb xresourcesfile ) from this repo 
+xresources : onedark ( just xrdb xresourcesfile ) from this repo '\n'
 font : JetbrainsMono Nerd Font
