@@ -10,5 +10,5 @@ some screenshots of my st zoomed with ligatures etc
 <img src="https://github.com/siduck76/st/blob/main/delete_this/u.png"> <br><br>
         
 ls-icons : https://github.com/Yash-Handa/logo-ls <br><br>
-xresources : onedark ( just xrdb xresourcesfile ) from this repo <br><br>
+xresources : onedark ( just xrdb merge xresourcesfile , do this everytime you make any change to xresources file ) from this repo <br><br>
 font : JetbrainsMono Nerd Font
