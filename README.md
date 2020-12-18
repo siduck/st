@@ -1,7 +1,7 @@
 # st
 my custom build of ST 
 
-some screenshots of my st zoomed  
+some screenshots of my st zoomed with ligatures etc 
 
 
 <img src="https://raw.githubusercontent.com/siduck76/st/main/delete_this/bruh.png">  <br><br>
