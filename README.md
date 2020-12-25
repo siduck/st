@@ -22,5 +22,5 @@ alt + g for resetting zoom
 
 # themes/fonts used 
 ls-icons : https://github.com/Yash-Handa/logo-ls <br>
-xresources : onedark ( just xrdb merge xresourcesfile , do this everytime you make any change to xresources file ) from this repo <br><br>
+xresources : onedark ( just xrdb merge xresourcesfile , do this everytime you make any change to xresources file ) from this repo <br>
 font : JetbrainsMono Nerd Font
