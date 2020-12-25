@@ -11,6 +11,16 @@ some screenshots of my st zoomed with ligatures etc
         
 # Install <br><br>
 cd st & make && sudo make install <br><br>
+
+# some keybinds<br><br>
+ctrl + shift + c for copy 
+ctrl + shift + v for paste 
+alt + comma for zoom in 
+alt + . for zoom out 
+alt + g for resetting zoom 
+<br><br>
+
+# themes/fonts used 
 ls-icons : https://github.com/Yash-Handa/logo-ls <br><br>
 xresources : onedark ( just xrdb merge xresourcesfile , do this everytime you make any change to xresources file ) from this repo <br><br>
 font : JetbrainsMono Nerd Font
