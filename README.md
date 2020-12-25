@@ -13,11 +13,11 @@ some screenshots of my st zoomed with ligatures etc
 cd st & make && sudo make install <br> 
 
 # some keybinds<br> 
-ctrl + shift + c for copy 
-ctrl + shift + v for paste 
-alt + comma for zoom in 
-alt + . for zoom out 
-alt + g for resetting zoom 
+ctrl + shift + c for copy <br>
+ctrl + shift + v for paste <br>
+alt + comma for zoom in <br>
+alt + . for zoom out <br>
+alt + g for resetting zoom <br>
 <br> 
 
 # themes/fonts used 
