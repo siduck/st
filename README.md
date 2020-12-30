@@ -1,5 +1,5 @@
 # st 
-my custom build of ST. DONT SKIP THE README , if want to have a similar setup
+my custom build of ST. DONT SKIP THE README , if want to have a similar setup<br><br>
 patches added for ligatures , clipboard , alpha ( transparency ) , boxdraw etc
 
 some screenshots of my st zoomed with ligatures etc 
