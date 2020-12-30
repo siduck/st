@@ -19,6 +19,10 @@ ctrl + shift + v for paste <br>
 alt + comma for zoom in <br>
 alt + . for zoom out <br>
 alt + g for resetting zoom <br>
+alt + s to increase transparency <br>
+alt + a to decrease transparency <br>
+
+you can change all of these in config.h
 <br> 
 
 # themes/fonts used 
