@@ -1,5 +1,5 @@
 # st 
-my custom build of ST <br> DONT SKIP THE README , if want to have a similar setup
+my custom build of ST. DONT SKIP THE README , if want to have a similar setup
 patches added for ligatures , clipboard , alpha ( transparency ) , boxdraw etc
 
 some screenshots of my st zoomed with ligatures etc 
@@ -24,4 +24,4 @@ alt + g for resetting zoom <br>
 # themes/fonts used 
 ls-icons : https://github.com/Yash-Handa/logo-ls <br>
 xresources : onedark ( just xrdb merge xresourcesfile , do this everytime you make any change to xresources file ) from this repo <br>
-font : JetbrainsMono Nerd Font
+font : <a href="https://github.com/siduck76/matfonts">  JetbrainsMono Nerd Font + material design icon fonts </a> 
