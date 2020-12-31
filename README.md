@@ -6,12 +6,13 @@ My custom build of st.
 - Clipboard
 - Alpha(Transparency)
 - Boxdraw
+- w3m
 and more...
 <br>
 <b>DON'T SKIP THE README, if you want to have a similar setup.<br><br></b>
 
 ## Screenshots: 
-
+<img src="https://raw.githubusercontent.com/siduck76/st/main/delete_this/w3m_ss.png"> <br><br>
 <img src="https://raw.githubusercontent.com/siduck76/st/main/delete_this/bruh.png">  <br><br>
 <img src="https://raw.githubusercontent.com/siduck76/st/main/delete_this/two7-00.png"> <br><br>
 <img src="https://raw.githubusercontent.com/siduck76/st/main/delete_this/ithree0-36-43.png"> <br><br>
