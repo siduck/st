@@ -18,7 +18,7 @@ and more...
 <img src="https://github.com/siduck76/st/blob/main/delete_this/u.png"> <br><hr>
 
 ## Install <br> 
-`cd st & make && sudo make install <br> `
+`cd st & make && sudo make install `<br>
 
 ## Keybindings<br> 
 <pre>
