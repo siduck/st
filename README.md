@@ -10,6 +10,7 @@ My custom terminal build based on (lukesmith's) (is functional enough and comple
 - font2
 - right click paste
 - st desktop entry 
+- newterm 
 and more...
 <br>
 <b>DON'T SKIP THE README, if you want to have a similar setup.<br><br></b>
