@@ -13,7 +13,7 @@ My custom terminal build based on (lukesmith's) (is functional enough and comple
 - newterm 
 and more...
 <br>
-<b>DON'T SKIP THE README, if you want to have a similar setup.<br><br></b>
+<b>DON'T SKIP THE README, if you want to have a similar setup / know default keybinds.<br><br></b>
 
 ## Screenshots: 
 <img src="https://raw.githubusercontent.com/siduck76/st/main/delete_this/w3m_ss.png"> <w3m removed tho> <br><br>
@@ -35,6 +35,9 @@ alt  + .                Zoom out <br>
 alt  + g                Reset Zoom<br>
 alt  + s                Increase Transparency<br>
 alt  + a                Decrease Transparency <br>
+copy anything and right click on the terminal ( will paste the copied thing ) 
+mod + shift + enter    open a new terminal with same cwd ( current working directory )
+
 </pre>
 you can change all of these in config.h
 <br> 
