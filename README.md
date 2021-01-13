@@ -8,6 +8,8 @@ My custom build of st (is functional enough and complete for a terminal).
 - Boxdraw
 - w3m
 - font2
+- right click paste
+- st desktop entry 
 and more...
 <br>
 <b>DON'T SKIP THE README, if you want to have a similar setup.<br><br></b>
