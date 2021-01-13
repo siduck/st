@@ -7,6 +7,7 @@ My custom build of st (is functional enough and complete for a terminal).
 - Alpha(Transparency)
 - Boxdraw
 - w3m
+- font2
 and more...
 <br>
 <b>DON'T SKIP THE README, if you want to have a similar setup.<br><br></b>
