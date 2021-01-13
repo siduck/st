@@ -1,5 +1,5 @@
 # st (Simple Terminal)
-My custom build of st (is functional enough and complete for a terminal).
+My custom terminal build based on (lukesmith's) (is functional enough and complete for a terminal).
 
 ## Patches: 
 - Ligatures
