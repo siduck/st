@@ -47,12 +47,4 @@ ls-icons: https://github.com/Yash-Handa/logo-ls <br>
 Fresources: onedark ( just xrdb merge xresourcesfile , do this everytime you make any change to xresources file ) from this repo itself.<br>
 Font: <a href="https://github.com/siduck76/matfonts">  JetbrainsMono Nerd Font + material design icon fonts </a> 
 
-<script type="text/javascript" async src="https://play.vidyard.com/embed/v4.js"></script>
-<img
-  style="width: 100%; margin: auto; display: block;"
-  class="vidyard-player-embed"
-  src="https://play.vidyard.com/sdFeoxaRr124U893WVEcxN.jpg"
-  data-uuid="sdFeoxaRr124U893WVEcxN"
-  data-v="4"
-  data-type="inline"
-/>
+
