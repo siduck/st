@@ -48,5 +48,5 @@ Fresources: onedark ( just xrdb merge xresourcesfile , do this everytime you mak
 Font: <a href="https://github.com/siduck76/matfonts">  JetbrainsMono Nerd Font + material design icon fonts </a> 
 
 
-a lil<a href="https://share.vidyard.com/watch/sdFeoxaRr124U893WVEcxN?">  video  
-</a>demo to show zoom/alpha changing via keybinds
+a lil<a href="https://share.vidyard.com/watch/sdFeoxaRr124U893WVEcxN?">video  </a>demo to show zoom/alpha changing via keybinds
+
