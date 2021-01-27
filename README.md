@@ -7,7 +7,6 @@ git clone -b sixel  --single-branch  https://github.com/siduck76/st.git
 
 
 ## Patches: 
-- Sixel ( for sixel graphics , can be used to display images in terminal )
 - Ligatures
 - Clipboard
 - Alpha(Transparency)
