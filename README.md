@@ -2,7 +2,7 @@
 My custom terminal build based on (lukesmith's with some additional patches like newterm , rightclick paste , desktop entry , live-reload , anygeometry and sane keybinds) (is functional enough and complete for a terminal).
 
 ## Patches: 
-- Sixel (thanks to @Tanish2002)
+- Sixel (thanks to @Tanish2002) (need libsixel and libsixel-utils) 
 - Ligatures
 - Clipboard
 - Boxdraw
