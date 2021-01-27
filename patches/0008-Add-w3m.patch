@@ -1,0 +1,25 @@
+From 3ba4309fa26dff5d6835247a6518118caf75531f Mon Sep 17 00:00:00 2001
+From: Tanish2002 <tanishkhare@gmail.com>
+Date: Wed, 27 Jan 2021 15:52:55 +0530
+Subject: [PATCH 08/16] Add w3m
+
+---
+ x.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/x.c b/x.c
+index d2e6d6a..d716043 100644
+--- a/x.c
++++ b/x.c
+@@ -1810,6 +1810,8 @@ xsixelscrollup(SixelContext *ctx, int n, int top)
+ int
+ xstartdraw(void)
+ {
++	if (IS_SET(MODE_VISIBLE))
++		XCopyArea(xw.dpy, xw.win, xw.buf, dc.gc, 0, 0, win.w, win.h, 0, 0);
+ 	return IS_SET(MODE_VISIBLE);
+ }
+ 
+-- 
+2.30.0
+

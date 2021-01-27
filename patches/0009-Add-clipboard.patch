@@ -1,0 +1,25 @@
+From 6b2b05315e2c8fc84a8ed0614b8bac33c18cbc62 Mon Sep 17 00:00:00 2001
+From: Tanish2002 <tanishkhare@gmail.com>
+Date: Wed, 27 Jan 2021 15:55:37 +0530
+Subject: [PATCH 09/16] Add clipboard
+
+---
+ x.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/x.c b/x.c
+index d716043..a6d43fc 100644
+--- a/x.c
++++ b/x.c
+@@ -688,6 +688,8 @@ setsel(char *str, Time t)
+ 	XSetSelectionOwner(xw.dpy, XA_PRIMARY, xw.win, t);
+ 	if (XGetSelectionOwner(xw.dpy, XA_PRIMARY) != xw.win)
+ 		selclear();
++
++	xclipcopy();
+ }
+ 
+ void
+-- 
+2.30.0
+

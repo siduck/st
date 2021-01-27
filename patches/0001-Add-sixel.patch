@@ -1,0 +1,1368 @@
+From 805334928e0e9ead6a9426ce4ab9347389ad39bf Mon Sep 17 00:00:00 2001
+From: Tanish2002 <tanishkhare@gmail.com>
+Date: Wed, 27 Jan 2021 15:47:19 +0530
+Subject: [PATCH 01/16] Add sixel
+
+---
+ Makefile    |   2 +-
+ sixel.c     | 607 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ sixel.h     |  61 ++++++
+ sixel_hls.c | 115 ++++++++++
+ sixel_hls.h |   7 +
+ st.c        |  76 ++++++-
+ st.h        |  18 ++
+ win.h       |  28 +++
+ x.c         | 180 +++++++++++++++-
+ 9 files changed, 1079 insertions(+), 15 deletions(-)
+ create mode 100644 sixel.c
+ create mode 100644 sixel.h
+ create mode 100644 sixel_hls.c
+ create mode 100644 sixel_hls.h
+
+diff --git a/Makefile b/Makefile
+index 470ac86..0bc8774 100644
+--- a/Makefile
++++ b/Makefile
+@@ -4,7 +4,7 @@
+ 
+ include config.mk
+ 
+-SRC = st.c x.c
++SRC = st.c x.c sixel.c sixel_hls.c
+ OBJ = $(SRC:.c=.o)
+ 
+ all: options st
+diff --git a/sixel.c b/sixel.c
+new file mode 100644
+index 0000000..97b9c4d
+--- /dev/null
++++ b/sixel.c
+@@ -0,0 +1,607 @@
++// sixel.c (part of mintty)
++// originally written by kmiya@cluti (https://github.com/saitoha/sixel/blob/master/fromsixel.c)
++// Licensed under the terms of the GNU General Public License v3 or later.
++
++#include <stdlib.h>
++#include <string.h>  /* memcpy */
++
++#include "sixel.h"
++#include "sixel_hls.h"
++
++#define SIXEL_RGB(r, g, b) ((r) + ((g) << 8) +  ((b) << 16))
++#define SIXEL_PALVAL(n,a,m) (((n) * (a) + ((m) / 2)) / (m))
++#define SIXEL_XRGB(r,g,b) SIXEL_RGB(SIXEL_PALVAL(r, 255, 100), SIXEL_PALVAL(g, 255, 100), SIXEL_PALVAL(b, 255, 100))
++
++static sixel_color_t const sixel_default_color_table[] = {
++	SIXEL_XRGB( 0,  0,  0),  /*  0 Black    */
++	SIXEL_XRGB(20, 20, 80),  /*  1 Blue     */
++	SIXEL_XRGB(80, 13, 13),  /*  2 Red      */
++	SIXEL_XRGB(20, 80, 20),  /*  3 Green    */
++	SIXEL_XRGB(80, 20, 80),  /*  4 Magenta  */
++	SIXEL_XRGB(20, 80, 80),  /*  5 Cyan     */
++	SIXEL_XRGB(80, 80, 20),  /*  6 Yellow   */
++	SIXEL_XRGB(53, 53, 53),  /*  7 Gray 50% */
++	SIXEL_XRGB(26, 26, 26),  /*  8 Gray 25% */
++	SIXEL_XRGB(33, 33, 60),  /*  9 Blue*    */
++	SIXEL_XRGB(60, 26, 26),  /* 10 Red*     */
++	SIXEL_XRGB(33, 60, 33),  /* 11 Green*   */
++	SIXEL_XRGB(60, 33, 60),  /* 12 Magenta* */
++	SIXEL_XRGB(33, 60, 60),  /* 13 Cyan*    */
++	SIXEL_XRGB(60, 60, 33),  /* 14 Yellow*  */
++	SIXEL_XRGB(80, 80, 80),  /* 15 Gray 75% */
++};
++
++static int
++set_default_color(sixel_image_t *image)
++{
++	int i;
++	int n;
++	int r;
++	int g;
++	int b;
++
++	/* palette initialization */
++	for (n = 1; n < 17; n++) {
++		image->palette[n] = sixel_default_color_table[n - 1];
++	}
++
++	/* colors 17-232 are a 6x6x6 color cube */
++	for (r = 0; r < 6; r++) {
++		for (g = 0; g < 6; g++) {
++			for (b = 0; b < 6; b++) {
++				image->palette[n++] = SIXEL_RGB(r * 51, g * 51, b * 51);
++			}
++		}
++	}
++
++	/* colors 233-256 are a grayscale ramp, intentionally leaving out */
++	for (i = 0; i < 24; i++) {
++		image->palette[n++] = SIXEL_RGB(i * 11, i * 11, i * 11);
++	}
++
++	for (; n < DECSIXEL_PALETTE_MAX; n++) {
++		image->palette[n] = SIXEL_RGB(255, 255, 255);
++	}
++
++	return (0);
++}
++
++static int
++sixel_image_init(
++    sixel_image_t    *image,
++    int              width,
++    int              height,
++    int              fgcolor,
++    int              bgcolor,
++    int              use_private_register)
++{
++	int status = (-1);
++	size_t size;
++
++	size = (size_t)(width * height) * sizeof(sixel_color_no_t);
++	image->width = width;
++	image->height = height;
++	image->data = (sixel_color_no_t *)malloc(size);
++	image->ncolors = 2;
++	image->use_private_register = use_private_register;
++
++	if (image->data == NULL) {
++		status = (-1);
++		goto end;
++	}
++	memset(image->data, 0, size);
++
++	image->palette[0] = bgcolor;
++
++	if (image->use_private_register)
++		image->palette[1] = fgcolor;
++
++	image->palette_modified = 0;
++
++	status = (0);
++
++end:
++	return status;
++}
++
++
++static int
++image_buffer_resize(
++    sixel_image_t   *image,
++    int              width,
++    int              height)
++{
++	int status = (-1);
++	size_t size;
++	sixel_color_no_t *alt_buffer;
++	int n;
++	int min_height;
++
++	size = (size_t)(width * height) * sizeof(sixel_color_no_t);
++	alt_buffer = (sixel_color_no_t *)malloc(size);
++	if (alt_buffer == NULL) {
++		/* free source image */
++		free(image->data);
++		image->data = NULL;
++		status = (-1);
++		goto end;
++	}
++
++	min_height = height > image->height ? image->height: height;
++	if (width > image->width) {  /* if width is extended */
++		for (n = 0; n < min_height; ++n) {
++			/* copy from source image */
++			memcpy(alt_buffer + width * n,
++			       image->data + image->width * n,
++			       (size_t)image->width * sizeof(sixel_color_no_t));
++			/* fill extended area with background color */
++			memset(alt_buffer + width * n + image->width,
++			       0,
++			       (size_t)(width - image->width) * sizeof(sixel_color_no_t));
++		}
++	} else {
++		for (n = 0; n < min_height; ++n) {
++			/* copy from source image */
++			memcpy(alt_buffer + width * n,
++			       image->data + image->width * n,
++			       (size_t)width * sizeof(sixel_color_no_t));
++		}
++	}
++
++	if (height > min_height) {  /* if height is extended */
++		/* fill extended area with background color */
++		memset(alt_buffer + width * image->height,
++		       0,
++		       (size_t)(width * (height - image->height)) * sizeof(sixel_color_no_t));
++	}
++
++	/* free source image */
++	free(image->data);
++
++	image->data = alt_buffer;
++	image->width = width;
++	image->height = height;
++
++	status = (0);
++
++end:
++	return status;
++}
++
++static void
++sixel_image_deinit(sixel_image_t *image)
++{
++	free(image->data);
++	image->data = NULL;
++}
++
++int
++sixel_parser_init(sixel_state_t *st,
++                  sixel_color_t fgcolor, sixel_color_t bgcolor,
++                  unsigned char use_private_register,
++                  int cell_width, int cell_height)
++{
++	int status = (-1);
++
++	st->state = PS_DECSIXEL;
++	st->pos_x = 0;
++	st->pos_y = 0;
++	st->max_x = 0;
++	st->max_y = 0;
++	st->attributed_pan = 2;
++	st->attributed_pad = 1;
++	st->attributed_ph = 0;
++	st->attributed_pv = 0;
++	st->repeat_count = 1;
++	st->color_index = 16;
++	st->grid_width = cell_width;
++	st->grid_height = cell_height;
++	st->nparams = 0;
++	st->param = 0;
++
++	/* buffer initialization */
++	status = sixel_image_init(&st->image, 1, 1, fgcolor, bgcolor, use_private_register);
++
++	return status;
++}
++
++int
++sixel_parser_set_default_color(sixel_state_t *st)
++{
++	return set_default_color(&st->image);
++}
++
++int
++sixel_parser_finalize(sixel_state_t *st, unsigned char *pixels)
++{
++	int status = (-1);
++	int sx;
++	int sy;
++	sixel_image_t *image = &st->image;
++	int x, y;
++	sixel_color_no_t *src;
++	unsigned char *dst;
++	int color;
++
++	if (++st->max_x < st->attributed_ph)
++		st->max_x = st->attributed_ph;
++
++	if (++st->max_y < st->attributed_pv)
++		st->max_y = st->attributed_pv;
++
++	sx = (st->max_x + st->grid_width - 1) / st->grid_width * st->grid_width;
++	sy = (st->max_y + st->grid_height - 1) / st->grid_height * st->grid_height;
++
++	if (image->width > sx || image->height > sy) {
++		status = image_buffer_resize(image, sx, sy);
++		if (status < 0)
++			goto end;
++	}
++
++	if (image->use_private_register && image->ncolors > 2 && !image->palette_modified) {
++		status = set_default_color(image);
++		if (status < 0)
++			goto end;
++	}
++
++	src = st->image.data;
++	dst = pixels;
++	for (y = 0; y < st->image.height; ++y) {
++		for (x = 0; x < st->image.width; ++x) {
++			color = st->image.palette[*src++];
++			*dst++ = color >> 16 & 0xff;   /* b */
++			*dst++ = color >> 8 & 0xff;    /* g */
++			*dst++ = color >> 0 & 0xff;    /* r */
++			dst++;                         /* a */
++		}
++	}
++	/* fill bottom padding with bgcolor */
++	for (; y < st->image.height; ++y) {
++		for (x = 0; x < st->image.width; ++x) {
++			color = st->image.palette[0];  /* bgcolor */
++			*dst++ = color >> 16 & 0xff;   /* b */
++			*dst++ = color >> 8 & 0xff;    /* g */
++			*dst++ = color >> 0 & 0xff;    /* r */
++			dst++;                         /* a */
++		}
++	}
++
++	status = (0);
++
++end:
++	return status;
++}
++
++/* convert sixel data into indexed pixel bytes and palette data */
++int
++sixel_parser_parse(sixel_state_t *st, unsigned char *p, size_t len)
++{
++	int status = (-1);
++	int n;
++	int i;
++	int x;
++	int y;
++	int bits;
++	int sixel_vertical_mask;
++	int sx;
++	int sy;
++	int c;
++	int pos;
++	int newwidth, newheight;
++	unsigned char *p0 = p;
++	sixel_image_t *image = &st->image;
++
++	if (! image->data)
++		goto end;
++
++	while (p < p0 + len) {
++		switch (st->state) {
++		case PS_ESC:
++			goto end;
++
++		case PS_DECSIXEL:
++			switch (*p) {
++			case '\x1b':
++				st->state = PS_ESC;
++				p++;
++				break;
++			case '"':
++				st->param = 0;
++				st->nparams = 0;
++				st->state = PS_DECGRA;
++				p++;
++				break;
++			case '!':
++				st->param = 0;
++				st->nparams = 0;
++				st->state = PS_DECGRI;
++				p++;
++				break;
++			case '#':
++				st->param = 0;
++				st->nparams = 0;
++				st->state = PS_DECGCI;
++				p++;
++				break;
++			case '$':
++				/* DECGCR Graphics Carriage Return */
++				st->pos_x = 0;
++				p++;
++				break;
++			case '-':
++				/* DECGNL Graphics Next Line */
++				st->pos_x = 0;
++				if (st->pos_y < DECSIXEL_HEIGHT_MAX - 5 - 6)
++					st->pos_y += 6;
++				else
++					st->pos_y = DECSIXEL_HEIGHT_MAX + 1;
++				p++;
++				break;
++			default:
++				if (*p >= '?' && *p <= '~') {  /* sixel characters */
++					newwidth = st->pos_x + st->repeat_count;
++					newheight = st->attributed_pv > 0 ? st->attributed_pv : st->pos_y + 6;
++					if ((image->width < newwidth || image->height < newheight) &&
++					    image->width < DECSIXEL_WIDTH_MAX && image->height < DECSIXEL_HEIGHT_MAX) {
++						sx = image->width < newwidth ? newwidth : image->width;
++						sy = newheight;
++
++						if (sx > DECSIXEL_WIDTH_MAX)
++							sx = DECSIXEL_WIDTH_MAX;
++						if (sy > DECSIXEL_HEIGHT_MAX)
++							sy = DECSIXEL_HEIGHT_MAX;
++
++						status = image_buffer_resize(image, sx, sy);
++						if (status < 0)
++							goto end;
++					}
++
++					if (st->color_index > image->ncolors)
++						image->ncolors = st->color_index;
++
++					if (st->pos_x + st->repeat_count > image->width)
++						st->repeat_count = image->width - st->pos_x;
++
++					if (st->repeat_count > 0 && st->pos_y - 5 < image->height) {
++						bits = *p - '?';
++						if (bits != 0) {
++							sixel_vertical_mask = 0x01;
++							if (st->repeat_count <= 1) {
++								for (i = 0; i < 6; i++) {
++									if ((bits & sixel_vertical_mask) != 0) {
++										pos = image->width * (st->pos_y + i) + st->pos_x;
++										image->data[pos] = st->color_index;
++										if (st->max_x < st->pos_x)
++											st->max_x = st->pos_x;
++										if (st->max_y < (st->pos_y + i))
++											st->max_y = st->pos_y + i;
++									}
++									sixel_vertical_mask <<= 1;
++								}
++							} else {
++								/* st->repeat_count > 1 */
++								for (i = 0; i < 6; i++) {
++									if ((bits & sixel_vertical_mask) != 0) {
++										c = sixel_vertical_mask << 1;
++										for (n = 1; (i + n) < 6; n++) {
++											if ((bits & c) == 0)
++												break;
++											c <<= 1;
++										}
++										for (y = st->pos_y + i; y < st->pos_y + i + n; ++y) {
++											for (x = st->pos_x; x < st->pos_x + st->repeat_count; ++x)
++												image->data[image->width * y + x] = st->color_index;
++										}
++										if (st->max_x < (st->pos_x + st->repeat_count - 1))
++											st->max_x = st->pos_x + st->repeat_count - 1;
++										if (st->max_y < (st->pos_y + i + n - 1))
++											st->max_y = st->pos_y + i + n - 1;
++										i += (n - 1);
++										sixel_vertical_mask <<= (n - 1);
++									}
++									sixel_vertical_mask <<= 1;
++								}
++							}
++						}
++					}
++					if (st->repeat_count > 0)
++						st->pos_x += st->repeat_count;
++					st->repeat_count = 1;
++				}
++				p++;
++				break;
++			}
++			break;
++
++		case PS_DECGRA:
++			/* DECGRA Set Raster Attributes " Pan; Pad; Ph; Pv */
++			switch (*p) {
++			case '\x1b':
++				st->state = PS_ESC;
++				p++;
++				break;
++			case '0':
++			case '1':
++			case '2':
++			case '3':
++			case '4':
++			case '5':
++			case '6':
++			case '7':
++			case '8':
++			case '9':
++				st->param = st->param * 10 + *p - '0';
++				if (st->param > DECSIXEL_PARAMVALUE_MAX)
++					st->param = DECSIXEL_PARAMVALUE_MAX;
++				p++;
++				break;
++			case ';':
++				if (st->nparams < DECSIXEL_PARAMS_MAX)
++					st->params[st->nparams++] = st->param;
++				st->param = 0;
++				p++;
++				break;
++			default:
++				if (st->nparams < DECSIXEL_PARAMS_MAX)
++					st->params[st->nparams++] = st->param;
++				if (st->nparams > 0)
++					st->attributed_pad = st->params[0];
++				if (st->nparams > 1)
++					st->attributed_pan = st->params[1];
++				if (st->nparams > 2 && st->params[2] > 0)
++					st->attributed_ph = st->params[2];
++				if (st->nparams > 3 && st->params[3] > 0)
++					st->attributed_pv = st->params[3];
++
++				if (st->attributed_pan <= 0)
++					st->attributed_pan = 1;
++				if (st->attributed_pad <= 0)
++					st->attributed_pad = 1;
++
++				if (image->width < st->attributed_ph ||
++				        image->height < st->attributed_pv) {
++					sx = st->attributed_ph;
++					if (image->width > st->attributed_ph)
++						sx = image->width;
++
++					sy = st->attributed_pv;
++					if (image->height > st->attributed_pv)
++						sy = image->height;
++
++					sx = (sx + st->grid_width - 1) / st->grid_width * st->grid_width;
++					sy = (sy + st->grid_height - 1) / st->grid_height * st->grid_height;
++
++					if (sx > DECSIXEL_WIDTH_MAX)
++						sx = DECSIXEL_WIDTH_MAX;
++					if (sy > DECSIXEL_HEIGHT_MAX)
++						sy = DECSIXEL_HEIGHT_MAX;
++
++					status = image_buffer_resize(image, sx, sy);
++					if (status < 0)
++						goto end;
++				}
++				st->state = PS_DECSIXEL;
++				st->param = 0;
++				st->nparams = 0;
++			}
++			break;
++
++		case PS_DECGRI:
++			/* DECGRI Graphics Repeat Introducer ! Pn Ch */
++			switch (*p) {
++			case '\x1b':
++				st->state = PS_ESC;
++				p++;
++				break;
++			case '0':
++			case '1':
++			case '2':
++			case '3':
++			case '4':
++			case '5':
++			case '6':
++			case '7':
++			case '8':
++			case '9':
++				st->param = st->param * 10 + *p - '0';
++				if (st->param > DECSIXEL_PARAMVALUE_MAX)
++					st->param = DECSIXEL_PARAMVALUE_MAX;
++				p++;
++				break;
++			default:
++				st->repeat_count = st->param;
++				if (st->repeat_count == 0)
++					st->repeat_count = 1;
++				st->state = PS_DECSIXEL;
++				st->param = 0;
++				st->nparams = 0;
++				break;
++			}
++			break;
++
++		case PS_DECGCI:
++			/* DECGCI Graphics Color Introducer # Pc; Pu; Px; Py; Pz */
++			switch (*p) {
++			case '\x1b':
++				st->state = PS_ESC;
++				p++;
++				break;
++			case '0':
++			case '1':
++			case '2':
++			case '3':
++			case '4':
++			case '5':
++			case '6':
++			case '7':
++			case '8':
++			case '9':
++				st->param = st->param * 10 + *p - '0';
++				if (st->param > DECSIXEL_PARAMVALUE_MAX)
++					st->param = DECSIXEL_PARAMVALUE_MAX;
++				p++;
++				break;
++			case ';':
++				if (st->nparams < DECSIXEL_PARAMS_MAX)
++					st->params[st->nparams++] = st->param;
++				st->param = 0;
++				p++;
++				break;
++			default:
++				st->state = PS_DECSIXEL;
++				if (st->nparams < DECSIXEL_PARAMS_MAX)
++					st->params[st->nparams++] = st->param;
++				st->param = 0;
++
++				if (st->nparams > 0) {
++					st->color_index = 1 + st->params[0];  /* offset 1(background color) added */
++					if (st->color_index < 0)
++						st->color_index = 0;
++					else if (st->color_index >= DECSIXEL_PALETTE_MAX)
++						st->color_index = DECSIXEL_PALETTE_MAX - 1;
++				}
++
++				if (st->nparams > 4) {
++					st->image.palette_modified = 1;
++					if (st->params[1] == 1) {
++						/* HLS */
++						if (st->params[2] > 360)
++							st->params[2] = 360;
++						if (st->params[3] > 100)
++							st->params[3] = 100;
++						if (st->params[4] > 100)
++							st->params[4] = 100;
++						image->palette[st->color_index]
++						    = hls_to_rgb(st->params[2], st->params[3], st->params[4]);
++					} else if (st->params[1] == 2) {
++						/* RGB */
++						if (st->params[2] > 100)
++							st->params[2] = 100;
++						if (st->params[3] > 100)
++							st->params[3] = 100;
++						if (st->params[4] > 100)
++							st->params[4] = 100;
++						image->palette[st->color_index]
++						    = SIXEL_XRGB(st->params[2], st->params[3], st->params[4]);
++					}
++				}
++				break;
++			}
++			break;
++		default:
++			break;
++		}
++	}
++
++	status = (0);
++
++end:
++	return status;
++}
++
++void
++sixel_parser_deinit(sixel_state_t *st)
++{
++	if (st)
++		sixel_image_deinit(&st->image);
++}
+diff --git a/sixel.h b/sixel.h
+new file mode 100644
+index 0000000..27448cf
+--- /dev/null
++++ b/sixel.h
+@@ -0,0 +1,61 @@
++#ifndef SIXEL_H
++#define SIXEL_H
++
++#include <unistd.h>
++#include <stdint.h>
++
++#define DECSIXEL_PARAMS_MAX 16
++#define DECSIXEL_PALETTE_MAX 1024
++#define DECSIXEL_PARAMVALUE_MAX 65535
++#define DECSIXEL_WIDTH_MAX 4096
++#define DECSIXEL_HEIGHT_MAX 4096
++
++typedef uint16_t sixel_color_no_t;
++typedef uint32_t sixel_color_t;
++
++typedef struct sixel_image_buffer {
++	sixel_color_no_t *data;
++	int width;
++	int height;
++	sixel_color_t palette[DECSIXEL_PALETTE_MAX];
++	sixel_color_no_t ncolors;
++	int palette_modified;
++	int use_private_register;
++} sixel_image_t;
++
++typedef enum parse_state {
++	PS_ESC        = 1,  /* ESC */
++	PS_DECSIXEL   = 2,  /* DECSIXEL body part ", $, -, ? ... ~ */
++	PS_DECGRA     = 3,  /* DECGRA Set Raster Attributes " Pan; Pad; Ph; Pv */
++	PS_DECGRI     = 4,  /* DECGRI Graphics Repeat Introducer ! Pn Ch */
++	PS_DECGCI     = 5,  /* DECGCI Graphics Color Introducer # Pc; Pu; Px; Py; Pz */
++} parse_state_t;
++
++typedef struct parser_context {
++	parse_state_t state;
++	int pos_x;
++	int pos_y;
++	int max_x;
++	int max_y;
++	int attributed_pan;
++	int attributed_pad;
++	int attributed_ph;
++	int attributed_pv;
++	int repeat_count;
++	int color_index;
++	int bgindex;
++	int grid_width;
++	int grid_height;
++	int param;
++	int nparams;
++	int params[DECSIXEL_PARAMS_MAX];
++	sixel_image_t image;
++} sixel_state_t;
++
++int sixel_parser_init(sixel_state_t *st, sixel_color_t fgcolor, sixel_color_t bgcolor, unsigned char use_private_register, int cell_width, int cell_height);
++int sixel_parser_parse(sixel_state_t *st, unsigned char *p, size_t len);
++int sixel_parser_set_default_color(sixel_state_t *st);
++int sixel_parser_finalize(sixel_state_t *st, unsigned char *pixels);
++void sixel_parser_deinit(sixel_state_t *st);
++
++#endif
+diff --git a/sixel_hls.c b/sixel_hls.c
+new file mode 100644
+index 0000000..4f157b2
+--- /dev/null
++++ b/sixel_hls.c
+@@ -0,0 +1,115 @@
++// sixel.c (part of mintty)
++// this function is derived from a part of graphics.c
++// in Xterm pl#310 originally written by Ross Combs.
++//
++// Copyright 2013,2014 by Ross Combs
++//
++//                         All Rights Reserved
++//
++// Permission is hereby granted, free of charge, to any person obtaining a
++// copy of this software and associated documentation files (the
++// "Software"), to deal in the Software without restriction, including
++// without limitation the rights to use, copy, modify, merge, publish,
++// distribute, sublicense, and/or sell copies of the Software, and to
++// permit persons to whom the Software is furnished to do so, subject to
++// the following conditions:
++//
++// The above copyright notice and this permission notice shall be included
++// in all copies or substantial portions of the Software.
++//
++// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
++// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++// IN NO EVENT SHALL THE ABOVE LISTED COPYRIGHT HOLDER(S) BE LIABLE FOR ANY
++// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
++// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
++// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++//
++// Except as contained in this notice, the name(s) of the above copyright
++// holders shall not be used in advertising or otherwise to promote the
++// sale, use or other dealings in this Software without prior written
++// authorization.
++
++#define SIXEL_RGB(r, g, b) (((r) << 16) + ((g) << 8) +  (b))
++
++int
++hls_to_rgb(int hue, int lum, int sat)
++{
++  double hs = (hue + 240) % 360;
++  double hv = hs / 360.0;
++  double lv = lum / 100.0;
++  double sv = sat / 100.0;
++  double c, x, m, c2;
++  double r1, g1, b1;
++  int r, g, b;
++  int hpi;
++
++  if (sat == 0) {
++    r = g = b = lum * 255 / 100;
++    return SIXEL_RGB(r, g, b);
++  }
++
++  if ((c2 = ((2.0 * lv) - 1.0)) < 0.0) {
++    c2 = -c2;
++  }
++  c = (1.0 - c2) * sv;
++  hpi = (int) (hv * 6.0);
++  x = (hpi & 1) ? c : 0.0;
++  m = lv - 0.5 * c;
++
++  switch (hpi) {
++  case 0:
++    r1 = c;
++    g1 = x;
++    b1 = 0.0;
++    break;
++  case 1:
++    r1 = x;
++    g1 = c;
++    b1 = 0.0;
++    break;
++  case 2:
++    r1 = 0.0;
++    g1 = c;
++    b1 = x;
++    break;
++  case 3:
++    r1 = 0.0;
++    g1 = x;
++    b1 = c;
++    break;
++  case 4:
++    r1 = x;
++    g1 = 0.0;
++    b1 = c;
++    break;
++  case 5:
++    r1 = c;
++    g1 = 0.0;
++    b1 = x;
++    break;
++  default:
++    return SIXEL_RGB(255, 255, 255);
++  }
++
++  r = (int) ((r1 + m) * 100.0 + 0.5);
++  g = (int) ((g1 + m) * 100.0 + 0.5);
++  b = (int) ((b1 + m) * 100.0 + 0.5);
++
++  if (r < 0) {
++    r = 0;
++  } else if (r > 100) {
++    r = 100;
++  }
++  if (g < 0) {
++    g = 0;
++  } else if (g > 100) {
++    g = 100;
++  }
++  if (b < 0) {
++    b = 0;
++  } else if (b > 100) {
++    b = 100;
++  }
++  return SIXEL_RGB(r * 255 / 100, g * 255 / 100, b * 255 / 100);
++}
+diff --git a/sixel_hls.h b/sixel_hls.h
+new file mode 100644
+index 0000000..6176589
+--- /dev/null
++++ b/sixel_hls.h
+@@ -0,0 +1,7 @@
++/*
++ * Primary color hues:
++ *  blue:  0 degrees
++ *  red:   120 degrees
++ *  green: 240 degrees
++ */
++int hls_to_rgb(int hue, int lum, int sat);
+diff --git a/st.c b/st.c
+index 76b7e0d..ed3c791 100644
+--- a/st.c
++++ b/st.c
+@@ -17,6 +17,7 @@
+ #include <unistd.h>
+ #include <wchar.h>
+ 
++#include "sixel.h"
+ #include "st.h"
+ #include "win.h"
+ 
+@@ -51,6 +52,7 @@ enum term_mode {
+ 	MODE_ECHO        = 1 << 4,
+ 	MODE_PRINT       = 1 << 5,
+ 	MODE_UTF8        = 1 << 6,
++	MODE_SIXEL       = 1 << 7,
+ };
+ 
+ enum cursor_movement {
+@@ -77,11 +79,12 @@ enum charset {
+ enum escape_state {
+ 	ESC_START      = 1,
+ 	ESC_CSI        = 2,
+-	ESC_STR        = 4,  /* DCS, OSC, PM, APC */
++	ESC_STR        = 4,  /* OSC, PM, APC */
+ 	ESC_ALTCHARSET = 8,
+ 	ESC_STR_END    = 16, /* a final string was encountered */
+ 	ESC_TEST       = 32, /* Enter in test mode */
+ 	ESC_UTF8       = 64,
++	ESC_DCS        =128,
+ };
+ 
+ typedef struct {
+@@ -128,6 +131,7 @@ typedef struct {
+ 	int icharset; /* selected charset for sequence */
+ 	int *tabs;
+ 	Rune lastc;   /* last printed char outside of sequence, 0 if control */
++	SixelContext sixel;
+ } Term;
+ 
+ /* CSI Escape sequence structs */
+@@ -158,6 +162,7 @@ static void sigchld(int);
+ static void ttywriteraw(const char *, size_t);
+ 
+ static void csidump(void);
++static void dcshandle(void);
+ static void csihandle(void);
+ static void csiparse(void);
+ static void csireset(void);
+@@ -1015,6 +1020,7 @@ void
+ treset(void)
+ {
+ 	uint i;
++	ImageList *im;
+ 
+ 	term.c = (TCursor){{
+ 		.mode = ATTR_NULL,
+@@ -1037,6 +1043,9 @@ treset(void)
+ 		tclearregion(0, 0, term.col-1, term.row-1);
+ 		tswapscreen();
+ 	}
++
++	for (im = term.sixel.images; im; im = im->next)
++		im->should_delete = 1;
+ }
+ 
+ void
+@@ -1051,9 +1060,12 @@ void
+ tswapscreen(void)
+ {
+ 	Line *tmp = term.line;
++	ImageList *im = term.sixel.images;
+ 
+ 	term.line = term.alt;
+ 	term.alt = tmp;
++	term.sixel.images = term.sixel.images_alt;
++	term.sixel.images_alt = im;
+ 	term.mode ^= MODE_ALTSCREEN;
+ 	tfulldirt();
+ }
+@@ -1074,6 +1086,8 @@ tscrolldown(int orig, int n)
+ 		term.line[i] = term.line[i-n];
+ 		term.line[i-n] = temp;
+ 	}
++	/* process scrolldown */
++	xsixelscrolldown(&term.sixel, n, term.bot);
+ 
+ 	selscroll(orig, n);
+ }
+@@ -1083,6 +1097,7 @@ tscrollup(int orig, int n)
+ {
+ 	int i;
+ 	Line temp;
++	ImageList *im;
+ 
+ 	LIMIT(n, 0, term.bot-orig+1);
+ 
+@@ -1095,6 +1110,9 @@ tscrollup(int orig, int n)
+ 		term.line[i+n] = temp;
+ 	}
+ 
++	/* process scrollup */
++	xsixelscrollup(&term.sixel, n, term.top);
++
+ 	selscroll(orig, -n);
+ }
+ 
+@@ -1597,6 +1615,23 @@ tsetmode(int priv, int set, int *args, int narg)
+ 	}
+ }
+ 
++void
++dcshandle(void)
++{
++	switch (csiescseq.mode[0]) {
++	default:
++		fprintf(stderr, "erresc: unknown csi ");
++		csidump();
++		/* die(""); */
++		break;
++	case 'q': /* DECSIXEL */
++		if (xsixelinit(&term.sixel) != 0)
++			perror("sixel_parser_init() failed");
++		term.mode |= MODE_SIXEL;
++		break;
++	}
++}
++
+ void
+ csihandle(void)
+ {
+@@ -1842,8 +1877,10 @@ csireset(void)
+ void
+ strhandle(void)
+ {
++	TermWindow win;
+ 	char *p = NULL, *dec;
+ 	int j, narg, par;
++	int i;
+ 
+ 	term.esc &= ~(ESC_STR_END|ESC_STR);
+ 	strparse();
+@@ -1895,6 +1932,19 @@ strhandle(void)
+ 		xsettitle(strescseq.args[0]);
+ 		return;
+ 	case 'P': /* DCS -- Device Control String */
++		if (IS_SET(MODE_SIXEL)) {
++			term.mode &= ~MODE_SIXEL;
++			xsixelnewimage(&term.sixel, term.c.x, term.c.y);
++			win = gettermwindow();
++			for (i = 0; i < (term.sixel.state.image.height + win.ch-1)/win.ch; ++i) {
++				int x;
++				tclearregion(term.c.x, term.c.y, term.c.x+(term.sixel.state.image.width+win.cw-1)/win.cw, term.c.y);
++				for (x = term.c.x; x < MIN(term.col, term.c.x+(term.sixel.state.image.width+win.cw-1)/win.cw); x++)
++					term.line[term.c.y][x].mode |= ATTR_SIXEL;
++				tnewline(1);
++			}
++		}
++		return;
+ 	case '_': /* APC -- Application Program Command */
+ 	case '^': /* PM -- Privacy Message */
+ 		return;
+@@ -2222,6 +2272,7 @@ eschandle(uchar ascii)
+ 		term.esc |= ESC_UTF8;
+ 		return 0;
+ 	case 'P': /* DCS -- Device Control String */
++		term.esc |= ESC_DCS;
+ 	case '_': /* APC -- Application Program Command */
+ 	case '^': /* PM -- Privacy Message */
+ 	case ']': /* OSC -- Operating System Command */
+@@ -2319,13 +2370,20 @@ tputc(Rune u)
+ 	 * character.
+ 	 */
+ 	if (term.esc & ESC_STR) {
+-		if (u == '\a' || u == 030 || u == 032 || u == 033 ||
+-		   ISCONTROLC1(u)) {
+-			term.esc &= ~(ESC_START|ESC_STR);
++		if (u == '\a' || u == 030 || u == 032 || u == 033 || ISCONTROLC1(u)) {
++			term.esc &= ~(ESC_START|ESC_STR|ESC_DCS);
+ 			term.esc |= ESC_STR_END;
+ 			goto check_control_code;
+ 		}
+ 
++		if (IS_SET(MODE_SIXEL)) {
++			if (xsixelparse(&term.sixel, (unsigned char *)&u, 1) != 0)
++				perror("sixel_parser_parse() failed");
++			return;
++		}
++		if (term.esc & ESC_DCS)
++			goto check_control_code;
++
+ 		if (strescseq.len+len >= strescseq.siz) {
+ 			/*
+ 			 * Here is a bug in terminals. If the user never sends
+@@ -2376,6 +2434,15 @@ check_control_code:
+ 				csihandle();
+ 			}
+ 			return;
++		} else if (term.esc & ESC_DCS) {
++			csiescseq.buf[csiescseq.len++] = u;
++			if (BETWEEN(u, 0x40, 0x7E)
++					|| csiescseq.len >= \
++					sizeof(csiescseq.buf)-1) {
++				csiparse();
++				dcshandle();
++			}
++			return;
+ 		} else if (term.esc & ESC_UTF8) {
+ 			tdefutf8(u);
+ 		} else if (term.esc & ESC_ALTCHARSET) {
+@@ -2580,6 +2647,7 @@ draw(void)
+ 		cx--;
+ 
+ 	drawregion(0, 0, term.col, term.row);
++  xdrawsixel(&term.sixel, term.line, term.row, term.col);
+ 	xdrawcursor(cx, term.c.y, term.line[term.c.y][cx],
+ 			term.ocx, term.ocy, term.line[term.ocy][term.ocx]);
+ 	term.ocx = cx;
+diff --git a/st.h b/st.h
+index 3d351b6..ed4db48 100644
+--- a/st.h
++++ b/st.h
+@@ -33,6 +33,7 @@ enum glyph_attribute {
+ 	ATTR_WRAP       = 1 << 8,
+ 	ATTR_WIDE       = 1 << 9,
+ 	ATTR_WDUMMY     = 1 << 10,
++	ATTR_SIXEL      = 1 << 11,
+ 	ATTR_BOLD_FAINT = ATTR_BOLD | ATTR_FAINT,
+ };
+ 
+@@ -69,6 +70,23 @@ typedef struct {
+ 
+ typedef Glyph *Line;
+ 
++typedef struct _ImageList {
++	struct _ImageList *next, *prev;
++	unsigned char *pixels;
++	void *pixmap;
++	int width;
++	int height;
++	int x;
++	int y;
++	int should_delete;
++} ImageList;
++
++typedef struct _SixelContext {
++	sixel_state_t state;
++	ImageList *images;     /* sixel images */
++	ImageList *images_alt; /* sixel images for alternate screen */
++} SixelContext;
++
+ typedef union {
+ 	int i;
+ 	uint ui;
+diff --git a/win.h b/win.h
+index a6ef1b9..2572d43 100644
+--- a/win.h
++++ b/win.h
+@@ -22,10 +22,38 @@ enum win_mode {
+ 	MODE_MOUSE       = MODE_MOUSEBTN|MODE_MOUSEMOTION|MODE_MOUSEX10\
+ 	                  |MODE_MOUSEMANY,
+ };
++/* Purely graphic info */
++typedef struct {
++	int tw, th; /* tty width and height */
++	int w, h; /* window width and height */
++	int ch; /* char height */
++	int cw; /* char width  */
++	int mode; /* window state/mode flags */
++	int cursor; /* cursor style */
++} TermWindow;
+ 
++// /* Purely graphic info */
++// typedef struct {
++// 	int tw, th; /* tty width and height */
++// 	int w, h; /* window width and height */
++// 	int ch; /* char height */
++// 	int cw; /* char width  */
++// 	int cyo; /* char y offset */
++// 	int mode; /* window state/mode flags */
++// 	int cursor; /* cursor style */
++// } TermWindow;
++
++TermWindow gettermwindow(void);
+ void xbell(void);
+ void xclipcopy(void);
++int xsixelinit(SixelContext *);
++void xsixelscrolldown(SixelContext *, int, int);
++void xsixelscrollup(SixelContext *, int, int);
++void xsixelnewimage(SixelContext *, int, int);
++int xsixelparse(SixelContext *, unsigned char *, int);
++void xsixeldeleteimage(SixelContext *, ImageList *);
+ void xdrawcursor(int, int, Glyph, int, int, Glyph);
++void xdrawsixel(SixelContext *, Line *, int, int);
+ void xdrawline(Line, int, int, int);
+ void xfinishdraw(void);
+ void xloadcols(void);
+diff --git a/x.c b/x.c
+index 210f184..6d187ff 100644
+--- a/x.c
++++ b/x.c
+@@ -17,6 +17,7 @@
+ 
+ char *argv0;
+ #include "arg.h"
++#include "sixel.h"
+ #include "st.h"
+ #include "win.h"
+ 
+@@ -77,16 +78,6 @@ typedef XftDraw *Draw;
+ typedef XftColor Color;
+ typedef XftGlyphFontSpec GlyphFontSpec;
+ 
+-/* Purely graphic info */
+-typedef struct {
+-	int tw, th; /* tty width and height */
+-	int w, h; /* window width and height */
+-	int ch; /* char height */
+-	int cw; /* char width  */
+-	int mode; /* window state/mode flags */
+-	int cursor; /* cursor style */
+-} TermWindow;
+-
+ typedef struct {
+ 	Display *dpy;
+ 	Colormap cmap;
+@@ -254,6 +245,12 @@ static char *opt_title = NULL;
+ 
+ static int oldbutton = 3; /* button event on startup: 3 = release */
+ 
++TermWindow
++gettermwindow()
++{
++	return win;
++}
++
+ void
+ clipcopy(const Arg *dummy)
+ {
+@@ -1592,6 +1589,87 @@ xsettitle(char *p)
+ 	XFree(prop.value);
+ }
+ 
++int
++xsixelinit(SixelContext *ctx)
++{
++	return sixel_parser_init(&ctx->state, 0, dc.col[defaultbg].pixel, 1, win.cw, win.ch);
++}
++
++int
++xsixelparse(SixelContext *ctx, unsigned char *u, int len)
++{
++	return sixel_parser_parse(&ctx->state, u, len);
++}
++
++void
++xsixelnewimage(SixelContext *ctx, int tx, int ty)
++{
++	ImageList *new_image;
++	int i;
++
++	new_image = malloc(sizeof(ImageList));
++	memset(new_image, 0, sizeof(ImageList));
++	new_image->x = tx;
++	new_image->y = ty;
++	new_image->width = ctx->state.image.width;
++	new_image->height = ctx->state.image.height;
++	new_image->pixels = malloc(new_image->width * new_image->height * 4);
++	if (sixel_parser_finalize(&ctx->state, new_image->pixels) != 0) {
++		perror("sixel_parser_finalize() failed");
++		sixel_parser_deinit(&ctx->state);
++		return;
++	}
++	sixel_parser_deinit(&ctx->state);
++	if (ctx->images) {
++		ImageList *im;
++		for (im = ctx->images; im->next;)
++			im = im->next;
++		im->next = new_image;
++		new_image->prev = im;
++	} else {
++		ctx->images = new_image;
++	}
++}
++
++void
++xsixeldeleteimage(SixelContext *ctx, ImageList *im)
++{
++	if (im->prev)
++		im->prev->next = im->next;
++	else
++		ctx->images = im->next;
++	if (im->next)
++		im->next->prev = im->prev;
++	if (im->pixmap)
++		XFreePixmap(xw.dpy, (Drawable)im->pixmap);
++	free(im->pixels);
++	free(im);
++}
++
++void
++xsixelscrolldown(SixelContext *ctx, int n, int bottom)
++{
++	ImageList *im;
++	for (im = ctx->images; im; im = im->next) {
++		if (im->y < bottom)
++			im->y += n;
++		if (im->y > bottom)
++			im->should_delete = 1;
++	}
++}
++
++void
++xsixelscrollup(SixelContext *ctx, int n, int top)
++{
++	ImageList *im;
++	for (im = ctx->images; im; im = im->next) {
++		if (im->y+im->height/win.ch > top)
++			im->y -= n;
++		if (im->y+im->height/win.ch < top)
++			im->should_delete = 1;
++	}
++}
++
+ int
+ xstartdraw(void)
+ {
+@@ -1629,6 +1707,88 @@ xdrawline(Line line, int x1, int y1, int x2)
+ 		xdrawglyphfontspecs(specs, base, i, ox, y1);
+ }
+ 
++void
++xdrawsixel(SixelContext *ctx, Line *line, int row, int col)
++{
++	ImageList *im, *tmp;
++	int x, y;
++	int n = 0;
++	int nlimit = 256;
++	XRectangle *rects = NULL;
++	XGCValues gcvalues = { 0 };
++	GC gc;
++
++	for (im = ctx->images; im;) {
++		if (im->should_delete) {
++			tmp = im;
++			im = im->next;
++			xsixeldeleteimage(ctx, tmp);
++			continue;
++		}
++
++		if (!im->pixmap) {
++			im->pixmap = (void *)XCreatePixmap(xw.dpy, xw.win, im->width, im->height, DefaultDepth(xw.dpy, xw.scr));
++			XImage ximage = {
++				.format = ZPixmap,
++				.data = (char *)im->pixels,
++				.width = im->width,
++				.height = im->height,
++				.xoffset = 0,
++				.byte_order = LSBFirst,
++				.bitmap_bit_order = MSBFirst,
++				.bits_per_pixel = 32,
++				.bytes_per_line = im->width * 4,
++				.bitmap_unit = 32,
++				.bitmap_pad = 32,
++				.depth = 24
++			};
++			XPutImage(xw.dpy, (Drawable)im->pixmap, dc.gc, &ximage, 0, 0, 0, 0, im->width, im->height);
++			free(im->pixels);
++			im->pixels = NULL;
++		}
++		n = 0;
++		for (y = im->y; y < (im->y + (im->height + win.ch - 1) / win.ch) && y < row; y++) {
++			if (y >= 0) {
++				for (x = im->x; x < (im->x + (im->width + win.cw - 1) / win.cw) && x < col; x++) {
++					if (!rects)
++						rects = xmalloc(sizeof(XRectangle) * nlimit);
++					if (line[y][x].mode & ATTR_SIXEL) {
++						if (n > 0 && rects[n-1].x+rects[n-1].width == borderpx+x*win.cw && rects[n-1].y == borderpx+y*win.ch) {
++							rects[n-1].width += win.cw;
++						} else {
++							rects[n].x = borderpx+x*win.cw;
++							rects[n].y = borderpx+y*win.ch;
++							rects[n].width = win.cw;
++							rects[n].height = win.ch;
++							if (++n == nlimit && (rects = realloc(rects, sizeof(XRectangle) * (nlimit *= 2))) == NULL)
++								die("Out of memory\n");
++						}
++					}
++				}
++			}
++			if (n > 1 && rects[n-2].x == rects[n-1].x && rects[n-2].width == rects[n-1].width) {
++				if (rects[n-2].y+rects[n-2].height == rects[n-1].y) {
++					rects[n-2].height += win.ch;
++					n--;
++				}
++			}
++		}
++		if (n == 0) {
++			tmp = im;
++			im = im->next;
++			xsixeldeleteimage(ctx, tmp);
++			continue;
++		}
++		gc = XCreateGC(xw.dpy, xw.win, 0, &gcvalues);
++		if (n > 1)
++			XSetClipRectangles(xw.dpy, gc, 0, 0, rects, n, YXSorted);
++		XCopyArea(xw.dpy, (Drawable)im->pixmap, xw.buf, gc, 0, 0, im->width, im->height, borderpx + im->x * win.cw, borderpx + im->y * win.ch);
++		XFreeGC(xw.dpy, gc);
++		im = im->next;
++	}
++	free(rects);
++}
++
+ void
+ xfinishdraw(void)
+ {
+-- 
+2.30.0
+
