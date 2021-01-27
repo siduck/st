@@ -1,6 +1,11 @@
 # st (Simple Terminal)
 My custom terminal build based on (lukesmith's with some additional patches like newterm , rightclick paste , desktop entry , live-reload , anygeometry and sane keybinds) (is functional enough and complete for a terminal).
 
+
+## To use this build 
+git clone -b sixel  --single-branch  https://github.com/siduck76/st.git
+
+
 ## Patches: 
 - Ligatures
 - Clipboard
