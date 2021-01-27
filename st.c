@@ -2652,7 +2652,8 @@ draw(void)
 	drawregion(0, 0, term.col, term.row);
   xdrawsixel(&term.sixel, term.line, term.row, term.col);
 	xdrawcursor(cx, term.c.y, term.line[term.c.y][cx],
-			term.ocx, term.ocy, term.line[term.ocy][term.ocx]);
+			term.ocx, term.ocy, term.line[term.ocy][term.ocx],
+			term.line[term.ocy], term.col);
 	term.ocx = cx;
 	term.ocy = term.c.y;
 	xfinishdraw();
