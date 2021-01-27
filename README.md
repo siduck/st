@@ -2,7 +2,7 @@
 My custom terminal build based on (lukesmith's with some additional patches like newterm , rightclick paste , desktop entry , live-reload , anygeometry and sane keybinds) (is functional enough and complete for a terminal).
 
 ## Patches: 
-- Sixel (credits to Tanish2002)
+- Sixel (thanks to @Tanish2002)
 - Ligatures
 - Clipboard
 - Boxdraw
@@ -29,6 +29,7 @@ My custom terminal build based on (lukesmith's with some additional patches like
 <img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/sixel.png"> <br><hr>
 
 ## Install <br> 
+` git clone -b sixel  --single-branch  https://github.com/siduck76/st.git` <br>
 `cd st & make && sudo make install `<br>
 
 ## Keybindings<br> 
