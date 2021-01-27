@@ -23,6 +23,9 @@ and more...
 <br>
 <b>DON'T SKIP THE README, if you want to have a similar setup / know default keybinds.<br><br></b>
 
+## Dependencies : <br>
+
+`libXft-devel libX11-devel harfbuzz-devel libXext-devel libXrender-devel libXinerama-devel`
 ## Screenshots: 
 <img src="https://github.com/siduck76/personal-backup/tree/master/delete_this/bruh.png">  <br><br>
 <img src="https://github.com/siduck76/personal-backup/tree/master/delete_this/two7-00.png"> <br><br>
