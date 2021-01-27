@@ -1,6 +1,6 @@
 .TH ST 1 st\-VERSION
 .SH NAME
-st \- simple terminal (Luke Smith (https://lukesmith.xyz)'s build)
+st \- simple terminal
 .SH SYNOPSIS
 .B st
 .RB [ \-aiv ]
@@ -125,41 +125,6 @@ and all the remaining arguments are used as a command
 even without it.
 .SH SHORTCUTS
 .TP
-.B Alt-j/k or Alt-Up/Down or Alt-Mouse Wheel
-Scroll up/down one line at a time.
-.TP
-.B Alt-u/d or Alt-Page Up/Page Down
-Scroll up/down one screen at a time.
-.TP
-.B Alt-Shift-k/j or Alt-Shift-Page Up/Page Down or Alt-Shift-Mouse Wheel
-Increase or decrease font size.
-.TP
-.B Alt-Home
-Reset to default font size.
-.TP
-.B Shift-Insert or Alt-v
-Paste from clipboard.
-.TP
-.B Alt-c
-Copy to clipboard.
-.TP
-.B Alt-p
-Paste/input primary selection.
-.TP
-.B Alt-l
-Show dmenu menu of all URLs on screen and choose one to open.
-.TP
-.B Alt-y
-Show dmenu menu of all URLs on screen and choose one to copy.
-.TP
-.B Alt-o
-Show dmenu menu of all recently run commands and copy the output of the chosen command to the clipboard.
-.I xclip
-required.
-.TP
-.B Alt-a/s
-Increase or decrease opacity/alpha value (make window more or less transparent).
-.TP
 .B Break
 Send a break in the serial line.
 Break key is obtained in PC keyboards
@@ -177,9 +142,23 @@ Print the full screen to the
 Print the selection to the
 .I iofile.
 .TP
-.B Alt-Ctrl
-Launch dmenu to enter a unicode codepoint and send the corresponding glyph
-to st.
+.B Ctrl-Shift-Page Up
+Increase font size.
+.TP
+.B Ctrl-Shift-Page Down
+Decrease font size.
+.TP
+.B Ctrl-Shift-Home
+Reset to default font size.
+.TP
+.B Ctrl-Shift-y
+Paste from primary selection (middle mouse button).
+.TP
+.B Ctrl-Shift-c
+Copy the selected text to the clipboard selection.
+.TP
+.B Ctrl-Shift-v
+Paste from the clipboard selection.
 .SH CUSTOMIZATION
 .B st
 can be customized by creating a custom config.h and (re)compiling the source
@@ -191,7 +170,8 @@ See the LICENSE file for the terms of redistribution.
 .SH SEE ALSO
 .BR tabbed (1),
 .BR utmp (1),
-.BR stty (1)
+.BR stty (1),
+.BR scroll (1)
 .SH BUGS
 See the TODO file in the distribution.
 
