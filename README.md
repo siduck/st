@@ -2,6 +2,7 @@
 My custom terminal build based on (lukesmith's with some additional patches like newterm , rightclick paste , desktop entry , live-reload , anygeometry and sane keybinds) (is functional enough and complete for a terminal).
 
 ## Patches: 
+- Sixel ( for sixel graphics , can be used to display images in terminal )
 - Ligatures
 - Clipboard
 - Alpha(Transparency)
