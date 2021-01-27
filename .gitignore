@@ -4,4 +4,3 @@ st
 *.orig
 pkg/
 *.pkg.tar.xz
-patches

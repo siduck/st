@@ -2,19 +2,21 @@
 My custom terminal build based on (lukesmith's with some additional patches like newterm , rightclick paste , desktop entry , live-reload , anygeometry and sane keybinds) (is functional enough and complete for a terminal).
 
 ## Patches: 
+- Sixel
 - Ligatures
 - Clipboard
-- Alpha(Transparency)
 - Boxdraw
+- Scrollback
+- Xresources
+- externalpipe
+- iso14755
 - w3m
 - font2
-- right click paste
 - st desktop entry 
 - newterm 
 - anysize
 - anygeometry 
 - live reload ( change colors/fonts on the fly )
-and more...
 <br>
 <b>DON'T SKIP THE README, if you want to have a similar setup / know default keybinds.<br><br></b>
 
