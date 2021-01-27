@@ -27,10 +27,10 @@ and more...
 
 `libXft-devel libX11-devel harfbuzz-devel libXext-devel libXrender-devel libXinerama-devel`
 ## Screenshots: 
-<img src="https://github.com/siduck76/personal-backup/tree/master/delete_this/bruh.png">  <br><br>
-<img src="https://github.com/siduck76/personal-backup/tree/master/delete_this/two7-00.png"> <br><br>
-<img src="https://github.com/siduck76/personal-backup/tree/master/delete_this/ithree0-36-43.png"> <br><br>
-<img src="https://github.com/siduck76/personal-backup/tree/master/delete_this/u.png"> <br><hr>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/bruh.png">  <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/ithree0-36-43.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/two7-00.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/u.png"> <br><hr>
 
 ## Install <br> 
 `cd st & make && sudo make install `<br>
