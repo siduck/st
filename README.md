@@ -10,7 +10,6 @@ My custom terminal build based on (lukesmith's with some additional patches like
 - Xresources
 - externalpipe
 - iso14755
-- w3m
 - font2
 - st desktop entry 
 - newterm 
