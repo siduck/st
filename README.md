@@ -59,3 +59,4 @@ Font: <a href="https://github.com/siduck76/matfonts">  JetbrainsMono Nerd Font +
 
 a lil<a href="https://share.vidyard.com/watch/sdFeoxaRr124U893WVEcxN?"> video  </a>demo to show zoom/alpha changing via keybinds
 
+
