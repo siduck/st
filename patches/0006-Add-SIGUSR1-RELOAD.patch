@@ -1,0 +1,53 @@
+From cdd20bbd409d9b7872aec5d895bb7e1556d84fbd Mon Sep 17 00:00:00 2001
+From: Tanish2002 <tanishkhare@gmail.com>
+Date: Wed, 27 Jan 2021 15:51:44 +0530
+Subject: [PATCH 06/16] Add SIGUSR1-RELOAD
+
+---
+ x.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/x.c b/x.c
+index 30a1ab0..aa07260 100644
+--- a/x.c
++++ b/x.c
+@@ -2324,6 +2324,28 @@ usage(void)
+ 	    " [stty_args ...]\n", argv0, argv0);
+ }
+ 
++void
++reload(int sig)
++{
++	config_init();
++
++	/* colors, fonts */
++	xloadcols();
++	xunloadfonts();
++	usedfont = (opt_font == NULL)? font : opt_font;
++	xloadfonts(usedfont, 0);
++
++	/* pretend the window just got resized */
++	cresize(win.w, win.h);
++
++	redraw();
++
++	/* triggers re-render if we're visible. */
++	ttywrite("\033[O", 3, 1);
++
++	signal(SIGUSR1, reload);
++}
++
+ int
+ main(int argc, char *argv[])
+ {
+@@ -2391,6 +2413,7 @@ run:
+ 	config_init();
+ 	cols = MAX(cols, 1);
+ 	rows = MAX(rows, 1);
++	signal(SIGUSR1, reload);
+ 	tnew(cols, rows);
+ 	xinit(cols, rows);
+ 	xsetenv();
+-- 
+2.30.0
+
