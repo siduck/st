@@ -5,6 +5,7 @@
 #include <hb.h>
 #include <hb-ft.h>
 
+#include "sixel.h"
 #include "st.h"
 
 void hbtransformsegment(XftFont *xfont, const Glyph *string, hb_codepoint_t *codepoints, int start, int length);

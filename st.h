@@ -34,15 +34,10 @@ enum glyph_attribute {
 	ATTR_WRAP       = 1 << 8,
 	ATTR_WIDE       = 1 << 9,
 	ATTR_WDUMMY     = 1 << 10,
- 	ATTR_BOXDRAW    = 1 << 11,
-	ATTR_LIGA       = 1 << 12,
+	ATTR_SIXEL      = 1 << 11,
+  ATTR_BOXDRAW    = 1 << 12,
+  ATTR_LIGA       = 1 << 13,
 	ATTR_BOLD_FAINT = ATTR_BOLD | ATTR_FAINT,
-};
-
-enum drawing_mode {
-	DRAW_NONE = 0,
-	DRAW_BG   = 1 << 0,
-	DRAW_FG   = 1 << 1,
 };
 
 enum selection_mode {
@@ -78,36 +73,46 @@ typedef struct {
 
 typedef Glyph *Line;
 
+typedef struct _ImageList {
+	struct _ImageList *next, *prev;
+	unsigned char *pixels;
+	void *pixmap;
+	int width;
+	int height;
+	int x;
+	int y;
+	int should_delete;
+} ImageList;
+
+typedef struct _SixelContext {
+	sixel_state_t state;
+	ImageList *images;     /* sixel images */
+	ImageList *images_alt; /* sixel images for alternate screen */
+} SixelContext;
+
 typedef union {
 	int i;
 	uint ui;
 	float f;
 	const void *v;
+	const char *s;
 } Arg;
-
-typedef struct {
-	uint b;
-	uint mask;
-	void (*func)(const Arg *);
-	const Arg arg;
-} MouseKey;
 
 void die(const char *, ...);
 void redraw(void);
 void draw(void);
 
-void externalpipe(const Arg *);
-void iso14755(const Arg *);
 void kscrolldown(const Arg *);
 void kscrollup(const Arg *);
 void newterm(const Arg *);
+void externalpipe(const Arg *);
+void iso14755(const Arg *);
 void printscreen(const Arg *);
 void printsel(const Arg *);
 void sendbreak(const Arg *);
 void toggleprinter(const Arg *);
 
 int tattrset(int);
-int tisaltscr(void);
 void tnew(int, int);
 void tresize(int, int);
 void tsetdirtattr(int);
@@ -142,16 +147,15 @@ void drawboxes(int, int, int, int, XftColor *, XftColor *, const XftGlyphFontSpe
 
 /* config.h globals */
 extern char *utmp;
+extern char *scroll;
 extern char *stty_args;
 extern char *vtiden;
 extern wchar_t *worddelimiters;
 extern int allowaltscreen;
+extern int allowwindowops;
 extern char *termname;
 extern unsigned int tabspaces;
 extern unsigned int defaultfg;
 extern unsigned int defaultbg;
-extern unsigned int defaultcs;
+extern char *iso14755_cmd;
 extern const int boxdraw, boxdraw_bold, boxdraw_braille;
-extern float alpha;
-extern MouseKey mkeys[];
-extern int ximspot_update_interval;
