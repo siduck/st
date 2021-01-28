@@ -1,32 +1,36 @@
 # st (Simple Terminal)
 My custom terminal build based on (lukesmith's with some additional patches like newterm , rightclick paste , desktop entry , live-reload , anygeometry and sane keybinds) (is functional enough and complete for a terminal).
 
+
+## To use this build 
+git clone -b sixel  --single-branch  https://github.com/siduck76/st.git
+
+
 ## Patches: 
-- Sixel
 - Ligatures
 - Clipboard
+- Alpha(Transparency)
 - Boxdraw
-- Scrollback
-- Xresources
-- externalpipe
-- iso14755
 - w3m
 - font2
+- right click paste
 - st desktop entry 
 - newterm 
 - anysize
 - anygeometry 
 - live reload ( change colors/fonts on the fly )
+and more...
 <br>
 <b>DON'T SKIP THE README, if you want to have a similar setup / know default keybinds.<br><br></b>
 
+## Dependencies : <br>
+
+`libXft-devel libX11-devel harfbuzz-devel libXext-devel libXrender-devel libXinerama-devel`
 ## Screenshots: 
-<img src="https://raw.githubusercontent.com/siduck76/st/main/delete_this/w3m_ss.png"> <w3m removed tho> <br><br>
- ( w3m patch draws some chars over the prompt so I removed it ) <img src="https://github.com/siduck76/st/blob/main/delete_this/w3m.jpg"><br><br>
-<img src="https://raw.githubusercontent.com/siduck76/st/main/delete_this/bruh.png">  <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/st/main/delete_this/two7-00.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/st/main/delete_this/ithree0-36-43.png"> <br><br>
-<img src="https://github.com/siduck76/st/blob/main/delete_this/u.png"> <br><hr>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/bruh.png">  <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/ithree0-36-43.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/two7-00.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/u.png"> <br><hr>
 
 ## Install <br> 
 `cd st & make && sudo make install `<br>

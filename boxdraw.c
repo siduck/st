@@ -4,7 +4,6 @@
  */
 
 #include <X11/Xft/Xft.h>
-#include "sixel.h"
 #include "st.h"
 #include "boxdraw_data.h"
 
