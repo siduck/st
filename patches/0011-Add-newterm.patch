@@ -1,0 +1,77 @@
+From ef4cfb997fe3fc0e361e8157ae0c5f923cf94437 Mon Sep 17 00:00:00 2001
+From: Tanish2002 <tanishkhare@gmail.com>
+Date: Wed, 27 Jan 2021 16:02:45 +0530
+Subject: [PATCH 11/16] Add newterm
+
+---
+ config.def.h |  1 +
+ st.c         | 21 +++++++++++++++++++++
+ st.h         |  1 +
+ 3 files changed, 23 insertions(+)
+
+diff --git a/config.def.h b/config.def.h
+index 4384b6c..e646d8d 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -253,6 +253,7 @@ static Shortcut shortcuts[] = {
+ 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
+ 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
+ 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
++	{ TERMMOD,              XK_Return,      newterm,        {.i =  0} },
+ };
+ 
+ /*
+diff --git a/st.c b/st.c
+index 7cbe89e..1196f74 100644
+--- a/st.c
++++ b/st.c
+@@ -157,6 +157,7 @@ typedef struct {
+ } STREscape;
+ 
+ static void execsh(char *, char **);
++static char *getcwd_by_pid(pid_t pid);
+ static void stty(char **);
+ static void sigchld(int);
+ static void ttywriteraw(const char *, size_t);
+@@ -1070,6 +1071,26 @@ tswapscreen(void)
+ 	tfulldirt();
+ }
+ 
++void
++newterm(const Arg* a)
++{
++	switch (fork()) {
++	case -1:
++		die("fork failed: %s\n", strerror(errno));
++		break;
++	case 0:
++		chdir(getcwd_by_pid(pid));
++		execlp("st", "./st", NULL);
++		break;
++	}
++}
++
++static char *getcwd_by_pid(pid_t pid) {
++	char buf[32];
++	snprintf(buf, sizeof buf, "/proc/%d/cwd", pid);
++	return realpath(buf, NULL);
++}
++
+ void
+ tscrolldown(int orig, int n)
+ {
+diff --git a/st.h b/st.h
+index 58b4585..6f43524 100644
+--- a/st.h
++++ b/st.h
+@@ -102,6 +102,7 @@ void die(const char *, ...);
+ void redraw(void);
+ void draw(void);
+ 
++void newterm(const Arg *);
+ void printscreen(const Arg *);
+ void printsel(const Arg *);
+ void sendbreak(const Arg *);
+-- 
+2.30.0
+

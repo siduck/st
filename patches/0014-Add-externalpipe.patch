@@ -1,0 +1,105 @@
+From b98ef17011c64e418d0ad8bd68835641b1ddb50a Mon Sep 17 00:00:00 2001
+From: Tanish2002 <tanishkhare@gmail.com>
+Date: Wed, 27 Jan 2021 16:31:01 +0530
+Subject: [PATCH 14/16] Add externalpipe
+
+---
+ st.c | 61 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ st.h |  1 +
+ 2 files changed, 61 insertions(+), 1 deletion(-)
+
+diff --git a/st.c b/st.c
+index a35fd75..a676653 100644
+--- a/st.c
++++ b/st.c
+@@ -736,8 +736,14 @@ sigchld(int a)
+ 	if ((p = waitpid(pid, &stat, WNOHANG)) < 0)
+ 		die("waiting for pid %hd failed: %s\n", pid, strerror(errno));
+ 
+-	if (pid != p)
++	if (pid != p) {
++		if (p == 0 && wait(&stat) < 0)
++			die("wait: %s\n", strerror(errno));
++
++		/* reinstall sigchld handler */
++		signal(SIGCHLD, sigchld);
+ 		return;
++	}
+ 
+ 	if (WIFEXITED(stat) && WEXITSTATUS(stat))
+ 		die("child exited with status %d\n", WEXITSTATUS(stat));
+@@ -2070,6 +2076,59 @@ strparse(void)
+ 	}
+ }
+ 
++void
++externalpipe(const Arg *arg)
++{
++	int to[2];
++	char buf[UTF_SIZ];
++	void (*oldsigpipe)(int);
++	Glyph *bp, *end;
++	int lastpos, n, newline;
++
++	if (pipe(to) == -1)
++		return;
++
++	switch (fork()) {
++	case -1:
++		close(to[0]);
++		close(to[1]);
++		return;
++	case 0:
++		dup2(to[0], STDIN_FILENO);
++		close(to[0]);
++		close(to[1]);
++		execvp(((char **)arg->v)[0], (char **)arg->v);
++		fprintf(stderr, "st: execvp %s\n", ((char **)arg->v)[0]);
++		perror("failed");
++		exit(0);
++	}
++
++	close(to[0]);
++	/* ignore sigpipe for now, in case child exists early */
++	oldsigpipe = signal(SIGPIPE, SIG_IGN);
++	newline = 0;
++	for (n = 0; n < term.row; n++) {
++		bp = term.line[n];
++		lastpos = MIN(tlinelen(n) + 1, term.col) - 1;
++		if (lastpos < 0)
++			break;
++		end = &bp[lastpos + 1];
++		for (; bp < end; ++bp)
++			if (xwrite(to[1], buf, utf8encode(bp->u, buf)) < 0)
++				break;
++		if ((newline = term.line[n][lastpos].mode & ATTR_WRAP))
++			continue;
++		if (xwrite(to[1], "\n", 1) < 0)
++			break;
++		newline = 0;
++	}
++	if (newline)
++		(void)xwrite(to[1], "\n", 1);
++	close(to[1]);
++	/* restore */
++	signal(SIGPIPE, oldsigpipe);
++}
++
+ void
+ strdump(void)
+ {
+diff --git a/st.h b/st.h
+index 287acfd..de307f6 100644
+--- a/st.h
++++ b/st.h
+@@ -105,6 +105,7 @@ void draw(void);
+ void kscrolldown(const Arg *);
+ void kscrollup(const Arg *);
+ void newterm(const Arg *);
++void externalpipe(const Arg *);
+ void printscreen(const Arg *);
+ void printsel(const Arg *);
+ void sendbreak(const Arg *);
+-- 
+2.30.0
+

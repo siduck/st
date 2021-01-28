@@ -8,7 +8,9 @@ Xft.hintstyle:  hintfull
 
 ! window padding
 st.borderpx:          15
-st.font:           JetBrainsMono Nerd Font:pixelsize=15 , Material Design Icons :pixelsize =15
+st.font: JetBrains Mono::pixelsize=15
+st.fontalt0: FuraCode Nerd Font:style=Regular:pixelsize=14
+! st.font:           JetBrainsMono Nerd Font:pixelsize=15 , Material Design Icons :pixelsize =15
 st.opacity: 255
 
 ! Base16 OneDark
