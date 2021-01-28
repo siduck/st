@@ -39,7 +39,7 @@ alt  + comma            Zoom in <br>
 alt  + .                Zoom out <br>
 alt  + g                Reset Zoom<br>
 
-`img2sixel -w size file` 
+ view images in cli : img2sixel -w size file <br><br> 
 copy anything and right click on the terminal ( will paste the copied thing ) 
 mod + shift + enter    open a new terminal with same cwd ( current working directory )
 
