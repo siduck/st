@@ -21,12 +21,10 @@ My custom terminal build based on (lukesmith's with some additional patches like
 <b>DON'T SKIP THE README, if you want to have a similar setup / know default keybinds.<br><br></b>
 
 ## Screenshots: 
-<img src="https://raw.githubusercontent.com/siduck76/st/main/delete_this/w3m_ss.png"> <w3m removed tho> <br><br>
- ( w3m patch draws some chars over the prompt so I removed it ) <img src="https://github.com/siduck76/st/blob/main/delete_this/w3m.jpg"><br><br>
-<img src="https://raw.githubusercontent.com/siduck76/st/main/delete_this/bruh.png">  <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/st/main/delete_this/two7-00.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/st/main/delete_this/ithree0-36-43.png"> <br><br>
-<img src="https://github.com/siduck76/st/blob/main/delete_this/u.png"> <br><hr>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/ithree0-36-43.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/two7-00.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/u.png"> <br><hr>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/sixel.png"> <br><hr>
 
 ## Install <br> 
 `cd st & make && sudo make install `<br>

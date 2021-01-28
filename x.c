@@ -710,10 +710,10 @@ brelease(XEvent *e)
 		mousereport(e);
 		return;
 	}
-
-	if (mouseaction(e, 1))
-		return;
-	if (e->xbutton.button == Button1)
+;
+        if (e->xbutton.button == Button3)
+		selpaste(NULL);
+	else if (e->xbutton.button == Button1)
 		mousesel(e, 1);
 }
 
@@ -1825,8 +1825,6 @@ xsixelscrollup(SixelContext *ctx, int n, int top)
 int
 xstartdraw(void)
 {
-	if (IS_SET(MODE_VISIBLE))
-		XCopyArea(xw.dpy, xw.win, xw.buf, dc.gc, 0, 0, win.w, win.h, 0, 0);
 	return IS_SET(MODE_VISIBLE);
 }
 
