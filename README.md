@@ -20,6 +20,8 @@ My custom terminal build based on (lukesmith's with some additional patches like
 <br>
 <b>DON'T SKIP THE README, if you want to have a similar setup / know default keybinds.<br><br></b>
 
+## To use this build 
+`git clone -b sixel  --single-branch  https://github.com/siduck76/st.git` 
 ## Screenshots: 
 <img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/ithree0-36-43.png"> <br><br>
 <img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/two7-00.png"> <br><br>
