@@ -1,5 +1,5 @@
 # st (Simple Terminal)
-My custom terminal build based on (lukesmith's with some additional patches like newterm , rightclick paste , desktop entry , live-reload , anygeometry and sane keybinds) (is functional enough and complete for a terminal).
+My custom terminal build based on (lukesmith's with some additional patches like newterm , rightclick paste , desktop entry , live-reload ,sixel, anygeometry and sane keybinds) (is functional enough and complete for a terminal).
 
 ## Patches: 
 - Sixel
@@ -38,8 +38,8 @@ ctrl + shift + v        Paste <br>
 alt  + comma            Zoom in <br>
 alt  + .                Zoom out <br>
 alt  + g                Reset Zoom<br>
-alt  + s                Increase Transparency<br>
-alt  + a                Decrease Transparency <br>
+
+`img2sixel -w size file` 
 copy anything and right click on the terminal ( will paste the copied thing ) 
 mod + shift + enter    open a new terminal with same cwd ( current working directory )
 
