@@ -1,5 +1,5 @@
 # st (Simple Terminal)
-My custom terminal build based on (lukesmith's with some additional patches like newterm , rightclick paste , desktop entry , live-reload , anygeometry and sane keybinds) (is functional enough and complete for a terminal).
+My custom terminal build based on (lukesmith's with some additional patches like newterm , rightclick paste , desktop entry ,sixel, live-reload , anygeometry and sane keybinds) (is functional enough and complete for a terminal).
 
 ## Patches: 
 - Ligatures
