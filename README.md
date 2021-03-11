@@ -41,6 +41,8 @@ alt  + s                Increase Transparency<br>
 alt  + a                Decrease Transparency <br>
 copy anything and right click on the terminal ( will paste the copied thing ) 
 mod + shift + enter    open a new terminal with same cwd ( current working directory )
+alt + k                 scroll down 
+alt + j                 scroll up
 
 </pre>
 you can change all of these in config.h
