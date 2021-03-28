@@ -16,16 +16,23 @@ My custom terminal build based on (lukesmith's with some additional patches like
 - live reload ( change colors/fonts on the fly )
 and more...
 <br>
+
+## How to apply Xresources and live-reload 
+
+```
+ - make an alias for this command 
+
+alias load="kill -USR1 $(pidof st)"
+
+xrdb merge Xresourcesfile && load
+
+```
 <b>DON'T SKIP THE README, if you want to have a similar setup / know default keybinds.<br><br></b>
 
 ## Dependencies : <br>
 
-`libXft-devel libX11-devel harfbuzz-devel libXext-devel libXrender-devel libXinerama-devel`
-## Screenshots: 
-<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/bruh.png">  <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/ithree0-36-43.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/two7-00.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/u.png"> <br><hr>
+`libXft-devel libX11-devel harfbuzz-devel libXext-devel libXrender-devel libXinerama-devel ( on void linux , these are probably already installed on your system if you use arch based or debian I think)`
+
 
 ## Install <br> 
 `cd st & make && sudo make install `<br>
@@ -52,9 +59,15 @@ you can change all of these in config.h
 
 ## Themes/Fonts used
 ls-icons: https://github.com/Yash-Handa/logo-ls <br>
-Fresources: onedark ( just xrdb merge xresourcesfile , do this everytime you make any change to xresources file ) from this repo itself.<br>
+Xresources: onedark ( just xrdb merge xresourcesfile , do this everytime you make any change to xresources file ) from this repo itself.<br>
 Font: <a href="https://github.com/siduck76/matfonts">  JetbrainsMono Nerd Font + material design icon fonts </a> 
 
 
 a lil<a href="https://share.vidyard.com/watch/sdFeoxaRr124U893WVEcxN?"> video  </a>demo to show zoom/alpha changing via keybinds
+
+## Screenshots: 
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/bruh.png">  <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/ithree0-36-43.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/two7-00.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/u.png"> <br><hr>
 
