@@ -17,7 +17,7 @@ My custom terminal build based on (lukesmith's with some additional patches like
 and more...
 <br>
 
-## How to apply Xresources and live-reload 
+## How to apply Xresources and live-reload ?
 
 ```
  make an alias for this command 
@@ -32,7 +32,6 @@ xrdb merge Xresourcesfile && load
 ## Dependencies : <br>
 
 `libXft-devel libX11-devel harfbuzz-devel libXext-devel libXrender-devel libXinerama-devel ( on void linux , these are probably already installed on your system if you use arch based or debian I think)`
-
 
 ## Install <br> 
 `cd st & make && sudo make install `<br>
