@@ -20,7 +20,7 @@ and more...
 ## How to apply Xresources and live-reload 
 
 ```
- - make an alias for this command 
+ make an alias for this command 
 
 alias load="kill -USR1 $(pidof st)"
 
