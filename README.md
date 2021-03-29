@@ -29,7 +29,7 @@ alias load="kill -USR1 $(pidof st)"
 xrdb merge Xresourcesfile && load
 
 ```
-## Xresources live-reload
+## Xresources live-reload demo
 
 <img src="https://github.com/siduck76/dotfiles/blob/master/rice%20flex/live-reloadXresources.gif"> <br><br>
 
