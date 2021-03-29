@@ -22,7 +22,7 @@ My custom terminal build based on (lukesmith's with some additional patches like
 ## How to apply Xresources and live-reload ?
 
 ```
- make an alias for this command
+ #make an alias for this command
 
 alias load="kill -USR1 $(pidof st)"
 
