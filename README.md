@@ -25,8 +25,9 @@ My custom terminal build based on (lukesmith's build only for ligatures ) with s
  #make an alias for this command
 
 alias load="kill -USR1 $(pidof st)"
+alias  use="xrdb merge"
 
-xrdb merge Xresourcesfile && load
+command : use Xresourcesfile && load
 
 ```
 ## Xresources live-reload demo
