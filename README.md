@@ -1,6 +1,6 @@
 # st (Simple Terminal)
 
-My custom terminal build based on (lukesmith's with some additional patches like newterm , rightclick paste , desktop entry ,sixel, live-reload , anygeometry and sane keybinds) (is functional enough and complete for a terminal).
+My custom terminal build based on (lukesmith's build only for ligatures ) with some additional patches like newterm , rightclick paste , desktop entry ,sixel, live-reload xresources , anygeometry etc!.
 
 ## Patches:
 
@@ -25,8 +25,9 @@ My custom terminal build based on (lukesmith's with some additional patches like
  #make an alias for this command
 
 alias load="kill -USR1 $(pidof st)"
+alias  use="xrdb merge"
 
-xrdb merge Xresourcesfile && load
+command : use Xresourcesfile && load
 
 ```
 ## Xresources live-reload demo
@@ -42,6 +43,9 @@ xrdb merge Xresourcesfile && load
 ## Install <br>
 
 `cd st & make && sudo make install `<br>
+
+## Ram comparison with other terminals 
+<img src="https://raw.githubusercontent.com/siduck76/dotfiles/master/rice%20flex/terminal_ramUsage.jpg"> <br><br>
 
 ## Keybindings<br>
 
