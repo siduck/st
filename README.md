@@ -42,7 +42,9 @@ command : use Xresourcesfile && load
 
 ## Install <br>
 
-`cd st & make && sudo make install `<br>
+`cd st (this repo) `<br>
+`sudo make install `<br>
+
 
 ## Ram comparison with other terminals 
 <img src="https://raw.githubusercontent.com/siduck76/dotfiles/master/rice%20flex/terminal_ramUsage.jpg"> <br><br>
