@@ -81,7 +81,7 @@ a lil<a href="https://share.vidyard.com/watch/sdFeoxaRr124U893WVEcxN?"> video </
 
 ## Screenshots:
 
-<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/bruh.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/ithree0-36-43.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/two7-00.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/delete_this/u.png"> <br><hr>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/misc/delete_this/bruh.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/misc/delete_this/ithree0-36-43.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/misc/delete_this/two7-00.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/misc/delete_this/u.png"> <br><hr>
