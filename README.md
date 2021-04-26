@@ -1,10 +1,13 @@
 # st (Simple Terminal)
 
-My custom terminal build based on (lukesmith's build only for ligatures ) with some additional patches like newterm , rightclick paste , desktop entry ,sixel, live-reload xresources , anygeometry etc!.
+This is a custom suckless st build (credits to lukesmith's build for ligatures patch) and I've added some additional patches like newterm , rightclick paste , desktop entry ,sixel, live-reload xresources etc!.
 
 ## Patches:
 
+- alpha 
 - Ligatures
+- sixel 
+- scrollback
 - Clipboard
 - Alpha(Transparency)
 - Boxdraw
@@ -15,6 +18,7 @@ My custom terminal build based on (lukesmith's build only for ligatures ) with s
 - newterm
 - anysize
 - anygeometry
+- xresources 
 - live reload ( change colors/fonts on the fly )
   and more...
   <br>
