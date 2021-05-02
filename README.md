@@ -43,14 +43,16 @@ command : use Xresourcesfile && load
 ## Dependencies : <br>
 
 
-`
+```
+
 #void (most of these are already installed on arch distros)
 xbps-install libXft-devel libX11-devel harfbuzz-devel libXext-devel libXrender-devel libXinerama-devel
  
 
 #Debian (and ubuntu probably)
 apt install build-essential libxft-dev libharfbuzz-dev 
-`
+
+```
 
 ## Install <br>
 
