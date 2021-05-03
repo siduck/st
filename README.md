@@ -60,8 +60,9 @@ apt install build-essential libxft-dev libharfbuzz-dev
 `sudo make install `<br>
 
 
-## Ram comparison with other terminals 
+## Ram comparison with other terminals and speed test
 <img src="https://raw.githubusercontent.com/siduck76/dotfiles/master/rice%20flex/terminal_ramUsage.jpg"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck76/dotfiles/master/rice%20flex/speedTest.png"> <br><br>
 
 ## Keybindings<br>
 
