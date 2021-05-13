@@ -5,7 +5,9 @@ Xft.autohint:	0
 Xft.hintstyle:	hintslight
 Xft.rgba:	rgb
 Xft.lcdfilter:	lcddefault
-Xft.dpi:   135
+
+!-- remove this if your DPI is ok -- !
+Xft.dpi:   135  
 
 st.font:         JetBrainsMono Nerd Font:style:medium:pixelsize=20
 
