@@ -269,6 +269,7 @@ static Shortcut shortcuts[] = {
   { MODKEY,               XK_d,           kscrolldown,    {.i = -1} },
   { MODKEY,		XK_s,		changealpha,	{.f = -0.05} },
   { MODKEY,		XK_a,		changealpha,	{.f = +0.05} },
+  { MODKEY,		XK_m,		changealpha,	{.f = +2.00} },
   { TERMMOD,              XK_Up,          zoom,           {.f = +1} },
   { TERMMOD,              XK_Down,        zoom,           {.f = -1} },
   { TERMMOD,              XK_K,           zoom,           {.f = +1} },
