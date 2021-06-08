@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "JetBrainsMono Nerd Font :pixelsize=17:antialias=true:autohint=true";
+static char *font = "JetBrainsMono Nerd Font :pixelsize=15:antialias=true:autohint=true";
 static char *font2[] = { "JetBrainsMono Nerd Font :pixelsize=15:antialias=true:autohint=true" };
 static int borderpx = 0;
 
@@ -17,7 +17,7 @@ static int borderpx = 0;
  * 4: value of shell in /etc/passwd
  * 5: value of shell in config.h
  */
-static char *shell = "/bin/fish";
+static char *shell = "/bin/sh";
 char *utmp = NULL;
 char *stty_args = "stty raw pass8 nl -echo -iexten -cstopb 38400";
 
@@ -143,7 +143,7 @@ static const char *colorname[] = {
  */
 unsigned int defaultfg = 259;
 unsigned int defaultbg = 258;
-unsigned int defaultcs = 257;
+unsigned int defaultcs = 256;
 unsigned int defaultrcs = 257;
 
 /*
@@ -249,8 +249,8 @@ static Shortcut shortcuts[] = {
   { ControlMask,          XK_Print,       toggleprinter,  {.i =  0} },
   { ShiftMask,            XK_Print,       printscreen,    {.i =  0} },
   { XK_ANY_MOD,           XK_Print,       printsel,       {.i =  0} },
-  { ControlMask,        XK_equal,       zoom,           {.f = +1} },
-  { ControlMask,	XK_minus,        zoom,           {.f = -1} },
+  { MODKEY,              XK_comma,       zoom,           {.f = +1} },
+  { MODKEY,              XK_period,        zoom,           {.f = -1} },
   { MODKEY,               XK_g,        zoomreset,      {.f =  0} },
   { ControlMask | ShiftMask,               XK_C,           clipcopy,       {.i =  0} },
   { ShiftMask,            XK_Insert,      clippaste,      {.i =  0} },
