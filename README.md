@@ -18,7 +18,8 @@ This is a custom suckless st build (credits to lukesmith's build for ligatures p
 - newterm
 - anysize
 - anygeometry
-- xresources 
+- xresources
+- sync patch ( Better draw timing to reduce flicker/tearing and improve animation smoothness )
 - live reload ( change colors/fonts on the fly )
   and more...
   <br>
