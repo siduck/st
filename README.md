@@ -63,6 +63,7 @@ apt install build-essential libxft-dev libharfbuzz-dev
 
 ## Ram comparison with other terminals and speed test
 
+St heavily customized + configured vs default other terminals
 <img src="https://raw.githubusercontent.com/siduck76/dotfiles/master/rice%20flex/terminal_ramUsage.jpg">
 (Tested on my old system having 1.6 GHZ N7310 Pentium CPU , 4gb ram)
  <br><br>
