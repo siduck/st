@@ -60,13 +60,23 @@ apt install build-essential libxft-dev libharfbuzz-dev
 `cd st (this repo) `<br>
 `sudo make install `<br>
 
+## other ST builds <br>
+
+1. Default ST (main branch)
+2. Sixel St (sixel branch , with sixel graphics support)
+3. St with vim-browse (vim-browse branch , navigate within like vim)
+
+- Use a different st build ( clone its branch)
+
+`example: git clone https://github.com/siduck76/st --branch sixel`
 
 ## Ram comparison with other terminals and speed test
 <img src="https://raw.githubusercontent.com/siduck76/dotfiles/master/rice%20flex/terminal_ramUsage.jpg"> <br><br>
 <img src="https://raw.githubusercontent.com/siduck76/dotfiles/master/rice%20flex/speedTest.png"> <br><br>
 <img src="https://raw.githubusercontent.com/siduck76/dotfiles/master/rice%20flex/speedTest1.png"> <br><br>
 
-## Keybindings<br>
+
+## Default Keybindings<br>
 
 <pre>
 ctrl + shift + c        Copy  <br>
@@ -75,14 +85,12 @@ alt  + comma            Zoom in <br>
 alt  + .                Zoom out <br>
 alt  + g                Reset Zoom<br>
 alt  + s                Increase Transparency<br>
-alt  + a                Decrease Transparency <br>
+alt  + a                Decrease Transparency<br>
+alt  + m                Reset Transparency<br>
 copy anything and right click on the terminal ( will paste the copied thing ) 
 mod + shift + enter    open a new terminal with same cwd ( current working directory )
-
-
 alt + k                 scroll down 
 alt + j                 scroll up
-
 </pre>
 
 you can change all of these in config.h
