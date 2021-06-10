@@ -138,7 +138,7 @@ static const char *colorname[] = {
   /* more colors can be added after 255 to use with DefaultXX */
   "#add8e6", /* 256 -> cursor */
   "#555555", /* 257 -> rev cursor*/
-  "#282c34", /* 258 -> bg */
+  "#282828", /* 258 -> bg */
   "#ffffff", /* 259 -> fg */
 };
 
@@ -151,23 +151,6 @@ unsigned int defaultfg = 259;
 unsigned int defaultbg = 258;
 unsigned int defaultcs = 256;
 unsigned int defaultrcs = 257;
-
-unsigned int const currentBg = 0, buffSize = 2048;
-/// Enable double / triple click yanking / selection of word / line.
-int const mouseYank = 1, mouseSelect = 0;
-/// [Vim Browse] Colors for search results currently on screen.
-unsigned int const highlightBg = 250, highlightFg = 250;
-
-char const wDelS[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^`{|}~", wDelL[] = " \t";
-char *nmKeys [] = {              ///< Shortcusts executed in normal mode
-  "R/Building\nN", "r/Building\n", "X/juli@machine\nN", "x/juli@machine\n",
-  "Q?[Leaving vim, starting execution]\n","F/: error:\nN", "f/: error:\n", "DQf"
-};
-unsigned int const amountNmKeys = sizeof(nmKeys) / sizeof(*nmKeys);
-/// Style of the {command, search} string shown in the right corner (y,v,V,/)
-Glyph styleSearch = {' ', ATTR_ITALIC | ATTR_BOLD_FAINT, 7, 16};
-Glyph style[] = {{' ',ATTR_ITALIC|ATTR_FAINT,15,16}, {' ',ATTR_ITALIC,232,11},
-                 {' ', ATTR_ITALIC, 232, 4}, {' ', ATTR_ITALIC, 232, 12}};
 
 /*
  * Default shape of cursor
@@ -280,7 +263,6 @@ static Shortcut shortcuts[] = {
   { ControlMask | ShiftMask,               XK_V,           clippaste,      {.i =  0} },
   { XK_ANY_MOD,		Button2,	selpaste,	{.i =  0} },
   { MODKEY,               XK_Num_Lock,    numlock,        {.i =  0} },
-  { MODKEY,               XK_c,           normalMode,     {.i =  0} },
   { MODKEY,               XK_Control_L,   iso14755,       {.i =  0} },
   { ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
   { ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
