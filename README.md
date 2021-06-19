@@ -110,3 +110,7 @@ a lil<a href="https://share.vidyard.com/watch/sdFeoxaRr124U893WVEcxN?"> video </
 <img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/misc/delete_this/ithree0-36-43.png"> <br><br>
 <img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/misc/delete_this/two7-00.png"> <br><br>
 <img src="https://raw.githubusercontent.com/siduck76/personal-backup/master/misc/delete_this/u.png"> <br><hr>
+
+# Credits
+
+- [live-reload](https://github.com/nimaipatel/st) 
