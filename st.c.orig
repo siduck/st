@@ -126,6 +126,7 @@ typedef struct {
 typedef struct {
 	int row;      /* nb row */
 	int col;      /* nb col */
+	int maxCol;
 	Line *line;   /* screen */
 	Line *alt;    /* alternate screen */
 	Line hist[HISTSIZE]; /* history buffer */
@@ -1368,8 +1369,8 @@ tclearregion(int x1, int y1, int x2, int y2)
 	if (y1 > y2)
 		temp = y1, y1 = y2, y2 = temp;
 
-	LIMIT(x1, 0, term.col-1);
-	LIMIT(x2, 0, term.col-1);
+	LIMIT(x1, 0, term.maxCol-1);
+	LIMIT(x2, 0, term.maxCol-1);
 	LIMIT(y1, 0, term.row-1);
 	LIMIT(y2, 0, term.row-1);
 
@@ -2705,9 +2706,16 @@ twrite(const char *buf, int buflen, int show_ctrl)
 void
 tresize(int col, int row)
 {
-	int i, j;
+	int i, j, pmc;
+	int colSet = col;
+
+	if(!term.maxCol) term.maxCol = 255;
+	col = MAX(col, term.maxCol);
+
 	int minrow = MIN(row, term.row);
-	int mincol = MIN(col, term.col);
+	int mincol = MIN(col, term.maxCol);
+	term.maxCol = MAX(col, pmc = term.maxCol);
+
 	int *bp;
 	TCursor c;
 
@@ -2743,7 +2751,7 @@ tresize(int col, int row)
 	term.tabs = xrealloc(term.tabs, col * sizeof(*term.tabs));
 
 	for (i = 0; i < HISTSIZE; i++) {
-		term.hist[i] = xrealloc(term.hist[i], col * sizeof(Glyph));
+		term.hist[i] = xrealloc(term.hist[i], term.maxCol * sizeof(Glyph));
 		for (j = mincol; j < col; j++) {
 			term.hist[i][j] = term.c.attr;
 			term.hist[i][j].u = ' ';
@@ -2758,20 +2766,21 @@ tresize(int col, int row)
 
 	/* allocate any new rows */
 	for (/* i = minrow */; i < row; i++) {
-		term.line[i] = xmalloc(col * sizeof(Glyph));
-		term.alt[i] = xmalloc(col * sizeof(Glyph));
+		term.line[i] = xmalloc(term.maxCol * sizeof(Glyph));
+		term.alt[i] = xmalloc(term.maxCol * sizeof(Glyph));
 	}
-	if (col > term.col) {
-		bp = term.tabs + term.col;
+	if (col > term.maxCol) {
+		bp = term.tabs + term.maxCol;
 
-		memset(bp, 0, sizeof(*term.tabs) * (col - term.col));
-		while (--bp > term.tabs && !*bp)
+		memset(bp, 0, sizeof(*term.tabs) * (col - term.maxCol));
+		/*while (--bp > term.tabs && !*bp)*/
 			/* nothing */ ;
 		for (bp += tabspaces; bp < term.tabs + col; bp += tabspaces)
 			*bp = 1;
 	}
 	/* update terminal size */
-	term.col = col;
+	term.col = colSet;
+	term.maxCol = col;
 	term.row = row;
 	/* reset scrolling region */
 	tsetscroll(0, row-1);
@@ -2781,7 +2790,7 @@ tresize(int col, int row)
 	c = term.c;
 	for (i = 0; i < 2; i++) {
 		if (mincol < col && 0 < minrow) {
-			tclearregion(mincol, 0, col - 1, minrow - 1);
+			tclearregion(pmc, 0, col - 1, minrow - 1);
 		}
 		if (0 < col && minrow < row) {
 			tclearregion(0, minrow, col - 1, row - 1);
