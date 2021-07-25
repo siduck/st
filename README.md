@@ -12,6 +12,7 @@ This is a custom suckless st build (credits to lukesmith's build for ligatures p
 - Alpha(Transparency)
 - Boxdraw
 - w3m
+- patch_column ( doesnt cut text while resizing)
 - font2
 - right click paste
 - st desktop entry
