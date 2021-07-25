@@ -1,4 +1,4 @@
-# st (Simple Terminal)
+# st (Suckless Terminal)
 
 This is a custom suckless st build (credits to lukesmith's build for ligatures patch) and I've added some additional patches like newterm , rightclick paste , desktop entry ,sixel, live-reload xresources , dynamic cursor etc!.
 
