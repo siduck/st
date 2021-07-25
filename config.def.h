@@ -6,7 +6,9 @@
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
 static char *font = "JetBrainsMono Nerd Font :pixelsize=15:antialias=true:autohint=true";
-static char *font2[] = { "JetBrainsMono Nerd Font :pixelsize=15:antialias=true:autohint=true" };
+static char *font2[] = { "Iosevka Nerd Font :pixelsize=15:antialias=true:autohint=true" };
+//static char *font2[] = { "blobmoji :pixelsize=15:antialias=true:autohint=true" }; enable this if u have libxft-bgra and blobmoji font!
+
 static int borderpx = 0;
 
 /*
@@ -222,7 +224,7 @@ ResourcePref resources[] = {
  * Internal mouse shortcuts.
  * Beware that overloading Button1 will disable the selection.
  */
-const unsigned int mousescrollincrement = 3;
+const unsigned int mousescrollincrement = 9;
 static MouseShortcut mshortcuts[] = {
   /* button               mask            string */
   { Button4,              XK_NO_MOD,      "\031" },
