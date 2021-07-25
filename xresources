@@ -11,8 +11,10 @@ Xft.dpi:   135
 
 st.font:         JetBrainsMono Nerd Font:style:medium:pixelsize=20
 
+!-- use values like 0.60 to get proper transparency -- !
+st.alpha: 1.0 
+
 ! window border inner
-st.opacity: 255
 st.borderpx: 10
 
 ! Base16 OneDark
