@@ -114,3 +114,4 @@ a lil<a href="https://share.vidyard.com/watch/sdFeoxaRr124U893WVEcxN?"> video </
 # Credits
 
 - [live-reload](https://github.com/nimaipatel/st) 
+- [patch_column](https://github.com/nimaipatel/st/blob/master/patches/7672445bab01cb4e861651dc540566ac22e25812.diff)
