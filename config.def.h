@@ -5,11 +5,11 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "JetBrainsMono Nerd Font :pixelsize=15:antialias=true:autohint=true";
-static char *font2[] = { "Iosevka Nerd Font :pixelsize=15:antialias=true:autohint=true" };
-//static char *font2[] = { "blobmoji :pixelsize=15:antialias=true:autohint=true" }; enable this if u have libxft-bgra and blobmoji font!
+static char *font = "Sarasa Mono K :pixelsize=14:antialias=true:autohint=true";
+static char *font2[] = { "FiraCode Nerd Font Mono :pixelsize=14:antialias=true:autohint=true", "Blobmoji :pixelsize=14:antialias=true:autohint=true" }; 
+//enable this if u have libxft-bgra and blobmoji font!
 
-static int borderpx = 0;
+static int borderpx = 50;
 
 /*
  * What program is execed by st depends of these precedence rules:
