@@ -1373,6 +1373,8 @@ tclearregion(int x1, int y1, int x2, int y2)
 	LIMIT(x2, 0, term.maxcol-1);
 	LIMIT(y1, 0, term.row-1);
 	LIMIT(y2, 0, term.row-1);
+        if (x2 == term.col-1)
+		x2 = term.maxcol-1;
 
 	for (y = y1; y <= y2; y++) {
 		term.dirty[y] = 1;
@@ -2709,7 +2711,9 @@ tresize(int col, int row)
 	int i, j;
         int tmp;
 	int minrow, mincol;
+        int pmaxcol = term.maxcol;
 	int *bp;
+        Glyph *gp;
 	TCursor c;
 
         tmp = col;
@@ -2725,6 +2729,8 @@ tresize(int col, int row)
 		        "tresize: error resizing to %dx%d\n", col, row);
 		return;
 	}
+
+       	term.maxcol = MAX(col, pmaxcol);
 
 	/*
 	 * slide screen to keep cursor where we expect it -
@@ -2752,10 +2758,13 @@ tresize(int col, int row)
 	term.tabs = xrealloc(term.tabs, col * sizeof(*term.tabs));
 
 	for (i = 0; i < HISTSIZE; i++) {
-		term.hist[i] = xrealloc(term.hist[i], col * sizeof(Glyph));
-		for (j = mincol; j < col; j++) {
-			term.hist[i][j] = term.c.attr;
-			term.hist[i][j].u = ' ';
+		term.hist[i] = xrealloc(term.hist[i], term.maxcol * sizeof(Glyph));
+		for (j = pmaxcol; j < term.maxcol; j++) {
+			gp = &term.hist[i][j];
+			gp->fg = defaultfg;
+			gp->bg = defaultbg;
+			gp->mode = ATTR_NULL;
+			gp->u = ' ';
 		}
 	}
 
@@ -2767,8 +2776,8 @@ tresize(int col, int row)
 
 	/* allocate any new rows */
 	for (/* i = minrow */; i < row; i++) {
-		term.line[i] = xmalloc(col * sizeof(Glyph));
-		term.alt[i] = xmalloc(col * sizeof(Glyph));
+                term.line[i] = xmalloc(term.maxcol * sizeof(Glyph));
+		term.alt[i] = xmalloc(term.maxcol * sizeof(Glyph));
 	}
         if (col > term.maxcol) {
 		bp = term.tabs + term.maxcol;
@@ -2790,8 +2799,8 @@ tresize(int col, int row)
 	/* Clearing both screens (it makes dirty all lines) */
 	c = term.c;
 	for (i = 0; i < 2; i++) {
-		if (mincol < col && 0 < minrow) {
-			tclearregion(mincol, 0, col - 1, minrow - 1);
+          	if (pmaxcol < col && 0 < minrow) {
+			tclearregion(pmaxcol, 0, col - 1, minrow - 1);
 		}
 		if (0 < col && minrow < row) {
 			tclearregion(0, minrow, col - 1, row - 1);
