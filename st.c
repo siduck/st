@@ -248,33 +248,6 @@ static uchar utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8};
 static Rune utfmin[UTF_SIZ + 1] = {       0,    0,  0x80,  0x800,  0x10000};
 static Rune utfmax[UTF_SIZ + 1] = {0x10FFFF, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
 
-#include <time.h>
-static int su = 0;
-struct timespec sutv;
-
-static void
-tsync_begin()
-{
-	clock_gettime(CLOCK_MONOTONIC, &sutv);
-	su = 1;
-}
-
-static void
-tsync_end()
-{
-	su = 0;
-}
-
-int
-tinsync(uint timeout)
-{
-	struct timespec now;
-	if (su && !clock_gettime(CLOCK_MONOTONIC, &now)
-	       && TIMEDIFF(now, sutv) >= timeout)
-		su = 0;
-	return su;
-}
-
 ssize_t
 xwrite(int fd, const char *s, size_t len)
 {
@@ -863,9 +836,6 @@ ttynew(char *line, char *cmd, char *out, char **args)
 	return cmdfd;
 }
 
-static int twrite_aborted = 0;
-int ttyread_pending() { return twrite_aborted; }
-
 size_t
 ttyread(void)
 {
@@ -875,10 +845,10 @@ ttyread(void)
 	int ret;
 
 	/* append read bytes to unprocessed bytes */
-	if ((ret = twrite_aborted ? 1 : read(cmdfd, buf+buflen, LEN(buf)-buflen)) < 0)
+	if ((ret = read(cmdfd, buf+buflen, LEN(buf)-buflen)) < 0)
 		die("couldn't read from shell: %s\n", strerror(errno));
-    
-	buflen += twrite_aborted ? 0 : ret;
+	buflen += ret;
+
 	written = twrite(buf, buflen, 0);
 	buflen -= written;
 	/* keep any uncomplete utf8 char for the next call */
@@ -1041,7 +1011,6 @@ tsetdirtattr(int attr)
 void
 tfulldirt(void)
 {
-	tsync_end();
 	tsetdirt(0, term.row-1);
 }
 
@@ -1373,8 +1342,6 @@ tclearregion(int x1, int y1, int x2, int y2)
 	LIMIT(x2, 0, term.maxcol-1);
 	LIMIT(y1, 0, term.row-1);
 	LIMIT(y2, 0, term.row-1);
-        if (x2 == term.col-1)
-		x2 = term.maxcol-1;
 
 	for (y = y1; y <= y2; y++) {
 		term.dirty[y] = 1;
@@ -2042,12 +2009,6 @@ strhandle(void)
 		return;
 	case 'P': /* DCS -- Device Control String */
 		term.mode |= ESC_DCS;
-		/* https://gitlab.com/gnachman/iterm2/-/wikis/synchronized-updates-spec */
-		if (strstr(strescseq.buf, "=1s") == strescseq.buf)
-			tsync_begin(), term.mode &= ~ESC_DCS;  /* BSU */
-		else if (strstr(strescseq.buf, "=2s") == strescseq.buf)
-			tsync_end(), term.mode &= ~ESC_DCS;  /* ESU */
-		return;
 	case '_': /* APC -- Application Program Command */
 	case '^': /* PM -- Privacy Message */
 		return;
@@ -2673,9 +2634,6 @@ twrite(const char *buf, int buflen, int show_ctrl)
 	Rune u;
 	int n;
 
-	int su0 = su;
-	twrite_aborted = 0;
-
 	for (n = 0; n < buflen; n += charsize) {
 		if (IS_SET(MODE_UTF8) && !IS_SET(MODE_SIXEL)) {
 			/* process a complete utf8 char */
@@ -2685,10 +2643,6 @@ twrite(const char *buf, int buflen, int show_ctrl)
 		} else {
 			u = buf[n] & 0xFF;
 			charsize = 1;
-		}
-		if (su0 && !su) {
-			twrite_aborted = 1;
-			break;  // ESU - allow rendering before a new BSU
 		}
 		if (show_ctrl && ISCONTROL(u)) {
 			if (u & 0x80) {
@@ -2710,10 +2664,8 @@ tresize(int col, int row)
 {
 	int i, j;
         int tmp;
-	int minrow, mincol;
-        int pmaxcol = term.maxcol;
+ 	int minrow, mincol;
 	int *bp;
-        Glyph *gp;
 	TCursor c;
 
         tmp = col;
@@ -2723,14 +2675,11 @@ tresize(int col, int row)
 	minrow = MIN(row, term.row);
 	mincol = MIN(col, term.maxcol);
 
-
 	if (col < 1 || row < 1) {
 		fprintf(stderr,
 		        "tresize: error resizing to %dx%d\n", col, row);
 		return;
 	}
-
-       	term.maxcol = MAX(col, pmaxcol);
 
 	/*
 	 * slide screen to keep cursor where we expect it -
@@ -2758,13 +2707,10 @@ tresize(int col, int row)
 	term.tabs = xrealloc(term.tabs, col * sizeof(*term.tabs));
 
 	for (i = 0; i < HISTSIZE; i++) {
-		term.hist[i] = xrealloc(term.hist[i], term.maxcol * sizeof(Glyph));
-		for (j = pmaxcol; j < term.maxcol; j++) {
-			gp = &term.hist[i][j];
-			gp->fg = defaultfg;
-			gp->bg = defaultbg;
-			gp->mode = ATTR_NULL;
-			gp->u = ' ';
+		term.hist[i] = xrealloc(term.hist[i], col * sizeof(Glyph));
+		for (j = mincol; j < col; j++) {
+			term.hist[i][j] = term.c.attr;
+			term.hist[i][j].u = ' ';
 		}
 	}
 
@@ -2776,12 +2722,12 @@ tresize(int col, int row)
 
 	/* allocate any new rows */
 	for (/* i = minrow */; i < row; i++) {
-                term.line[i] = xmalloc(term.maxcol * sizeof(Glyph));
-		term.alt[i] = xmalloc(term.maxcol * sizeof(Glyph));
+		term.line[i] = xmalloc(col * sizeof(Glyph));
+		term.alt[i] = xmalloc(col * sizeof(Glyph));
 	}
-        if (col > term.maxcol) {
-		bp = term.tabs + term.maxcol;
 
+        if (col > term.maxcol) {
+ 		bp = term.tabs + term.maxcol;
                 memset(bp, 0, sizeof(*term.tabs) * (col - term.maxcol));
 		while (--bp > term.tabs && !*bp)
 			/* nothing */ ;
@@ -2789,8 +2735,8 @@ tresize(int col, int row)
 			*bp = 1;
 	}
 	/* update terminal size */
-        term.col = tmp;
-	term.maxcol = col;
+	term.col = tmp;
+        term.maxcol = col;
 	term.row = row;
 	/* reset scrolling region */
 	tsetscroll(0, row-1);
@@ -2799,8 +2745,8 @@ tresize(int col, int row)
 	/* Clearing both screens (it makes dirty all lines) */
 	c = term.c;
 	for (i = 0; i < 2; i++) {
-          	if (pmaxcol < col && 0 < minrow) {
-			tclearregion(pmaxcol, 0, col - 1, minrow - 1);
+		if (mincol < col && 0 < minrow) {
+			tclearregion(mincol, 0, col - 1, minrow - 1);
 		}
 		if (0 < col && minrow < row) {
 			tclearregion(0, minrow, col - 1, row - 1);

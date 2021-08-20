@@ -94,6 +94,7 @@ typedef XftGlyphFontSpec GlyphFontSpec;
 typedef struct {
 	int tw, th; /* tty width and height */
 	int w, h; /* window width and height */
+        int hborderpx, vborderpx;
 	int ch; /* char height */
 	int cw; /* char width  */
 	int cyo; /* char y offset */
@@ -306,7 +307,7 @@ numlock(const Arg *dummy)
 void
 changealpha(const Arg *arg)
 {
-    if(alpha > 1 && arg->f == 2 )
+     if(alpha > 1 && arg->f == 2 )
       alpha = 1;
     if((alpha > 0 && arg->f < 0) || (alpha < 1 && arg->f > 0))
         alpha += arg->f;
@@ -695,8 +696,7 @@ brelease(XEvent *e)
 		mousereport(e);
 		return;
 	}
-
-	if (e->xbutton.button == Button3)
+        if (e->xbutton.button == Button3)
 		selpaste(NULL);
 	else if (e->xbutton.button == Button1)
 		mousesel(e, 1);
@@ -1245,8 +1245,8 @@ xinit(int cols, int rows)
 	xloadcols();
 
 	/* adjust fixed window geometry */
-        win.w = 2 * borderpx + cols * win.cw;
-	win.h = 2 * borderpx + rows * win.ch;
+	win.w = 2 * win.hborderpx + cols * win.cw;
+	win.h = 2 * win.vborderpx + rows * win.ch;
 	if (xw.gm & XNegative)
 		xw.l += DisplayWidth(xw.dpy, xw.scr) - win.w - 2;
 	if (xw.gm & YNegative)
@@ -1556,17 +1556,17 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
 	if (dmode & DRAW_BG) {
 		/* Intelligent cleaning up of the borders. */
 		if (x == 0) {
-                            	xclear(0, (y == 0)? 0 : winy, borderpx,
+                        xclear(0, (y == 0)? 0 : winy, borderpx,
 					winy + win.ch +
                                         ((winy + win.ch >= borderpx + win.th)? win.h : 0));
 		}
-                if (winx + width >= borderpx + win.tw) {
+	        if (winx + width >= borderpx + win.tw) {
 			xclear(winx + width, (y == 0)? 0 : winy, win.w,
-                            	((winy + win.ch >= borderpx + win.th)? win.h : (winy + win.ch)));
+                                ((winy + win.ch >= borderpx + win.th)? win.h : (winy + win.ch)));
 		}
 		if (y == 0)
-		xclear(winx, 0, winx + width, borderpx);
-         	if (winy + win.ch >= borderpx + win.th)	
+                  	xclear(winx, 0, winx + width, borderpx);
+          	if (winy + win.ch >= borderpx + win.th)
 			xclear(winx, winy + win.ch, winx + width, win.h);
 
 		/* Fill the background */
@@ -1617,8 +1617,7 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og, Line line, int le
 	 * It will restore the ligatures broken by the cursor. */
 	xdrawline(line, 0, oy, len);
 
-        if (IS_SET(MODE_HIDE) || !IS_SET(MODE_FOCUSED))
-		return;
+        if (IS_SET(MODE_HIDE) || !IS_SET(MODE_FOCUSED)) return;
 
 	/*
 	 * Select the right color for the right mode.
@@ -1984,9 +1983,6 @@ resize(XEvent *e)
 	cresize(e->xconfigure.width, e->xconfigure.height);
 }
 
-int tinsync(uint);
-int ttyread_pending();
-
 void
 run(void)
 {
@@ -2021,7 +2017,7 @@ run(void)
 		FD_SET(ttyfd, &rfd);
 		FD_SET(xfd, &rfd);
 
-		if (XPending(xw.dpy) || ttyread_pending())
+		if (XPending(xw.dpy))
 			timeout = 0;  /* existing events might not set xfd */
 
 		seltv.tv_sec = timeout / 1E3;
@@ -2035,8 +2031,7 @@ run(void)
 		}
 		clock_gettime(CLOCK_MONOTONIC, &now);
 
-		int ttyin = FD_ISSET(ttyfd, &rfd) || ttyread_pending();
-		if (ttyin)
+		if (FD_ISSET(ttyfd, &rfd))
 			ttyread();
 
 		xev = 0;
@@ -2060,7 +2055,7 @@ run(void)
 		 * maximum latency intervals during `cat huge.txt`, and perfect
 		 * sync with periodic updates from animations/key-repeats/etc.
 		 */
-		if (ttyin || xev) {
+		if (FD_ISSET(ttyfd, &rfd) || xev) {
 			if (!drawing) {
 				trigger = now;
 				drawing = 1;
@@ -2069,18 +2064,6 @@ run(void)
 			          / maxlatency * minlatency;
 			if (timeout > 0)
 				continue;  /* we have time, try to find idle */
-		}
-
-		if (tinsync(su_timeout)) {
-			/*
-			 * on synchronized-update draw-suspension: don't reset
-			 * drawing so that we draw ASAP once we can (just after
-			 * ESU). it won't be too soon because we already can
-			 * draw now but we skip. we set timeout > 0 to draw on
-			 * SU-timeout even without new content.
-			 */
-			timeout = minlatency;
-			continue;
 		}
 
 		/* idle detected or maxlatency exhausted -> draw */
@@ -2226,7 +2209,6 @@ reload(int sig)
 
 	signal(SIGUSR1, reload);
 }
-
 
 int
 resource_load(XrmDatabase db, char *name, enum resource_type rtype, void *dst)

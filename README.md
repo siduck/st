@@ -1,6 +1,6 @@
 # st (Suckless Terminal)
 
-This is a custom suckless st build (credits to lukesmith's build as this is based on it) and I've added some additional patches like newterm , rightclick paste , desktop entry ,sixel, live-reload xresources , dynamic cursor etc!.
+This is a custom suckless st build and I've added some additional patches like newterm , rightclick paste , desktop entry ,sixel, live-reload xresources , dynamic cursor etc!.
 
 ## Patches:
 
