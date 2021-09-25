@@ -54,6 +54,8 @@ xbps-install libXft-devel libX11-devel harfbuzz-devel libXext-devel libXrender-d
 #Debian (and ubuntu probably)
 apt install build-essential libxft-dev libharfbuzz-dev 
 
+
+# Install font-symbola too
 ```
 
 ## Install <br>
