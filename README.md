@@ -1,29 +1,29 @@
 # st (Suckless Terminal)
 
-This is a custom suckless st build and I've added some additional patches like newterm , rightclick paste , desktop entry ,sixel, live-reload xresources , dynamic cursor etc!.
-
 ## Patches:
 
 - alpha 
 - Ligatures
-- sixel 
+- sixel (check sixel branch)
 - scrollback
 - Clipboard
 - Alpha(Transparency)
 - Boxdraw
-- w3m
 - patch_column ( doesnt cut text while resizing)
 - font2
 - right click paste
 - st desktop entry
 - newterm
-- anysize
 - anygeometry
 - xresources
 - sync patch ( Better draw timing to reduce flicker/tearing and improve animation smoothness )
 - live reload ( change colors/fonts on the fly )
   and more...
   <br>
+
+## Fonts 
+
+- Install JetbrainsMono Mono Nerd Font or any nerd font from [here](https://www.nerdfonts.com/font-downloads)
 
 ## How to apply Xresources and live-reload ?
 
@@ -44,16 +44,13 @@ command : use Xresourcesfile && load
 
 ## Dependencies : <br>
 
-
 ```
 
 #void (most of these are already installed on arch distros)
 xbps-install libXft-devel libX11-devel harfbuzz-devel libXext-devel libXrender-devel libXinerama-devel
  
-
 #Debian (and ubuntu probably)
 apt install build-essential libxft-dev libharfbuzz-dev 
-
 
 # Install font-symbola too
 ```
@@ -62,6 +59,8 @@ apt install build-essential libxft-dev libharfbuzz-dev
 
 `cd st (this repo) `<br>
 `sudo make install `<br>
+
+(note : dont forget do run the xrdb merge xresourcesfile command , put that in your wm's autostart or such) 
 
 ## other ST builds <br>
 
@@ -78,6 +77,7 @@ apt install build-essential libxft-dev libharfbuzz-dev
 <img src="https://raw.githubusercontent.com/siduck76/dotfiles/master/rice%20flex/speedTest.png"> <br><br>
 <img src="https://raw.githubusercontent.com/siduck76/dotfiles/master/rice%20flex/speedTest1.png"> <br><br>
 
+( note : This benchmark was done on my low end machine which has a pentium cpu so the results might vary )
 
 ## Default Keybindings<br>
 
@@ -101,9 +101,9 @@ you can change all of these in config.h
 
 ## Themes/Fonts used
 
-ls-icons: https://github.com/Yash-Handa/logo-ls <br>
-Xresources: onedark ( just xrdb merge xresourcesfile , do this everytime you make any change to xresources file ) from this repo itself.<br>
-Font: <a href="https://github.com/siduck76/matfonts"> JetbrainsMono Nerd Font + material design icon fonts </a>
+- ls-icons: https://github.com/Yash-Handa/logo-ls <br>
+- Xresources: onedark ( just xrdb merge xresourcesfile , do this everytime you make any change to xresources file ) from this repo itself.<br>
+- Font: <a href="https://github.com/siduck76/matfonts"> JetbrainsMono Nerd Font + material design icon fonts </a>
 
 a lil<a href="https://share.vidyard.com/watch/sdFeoxaRr124U893WVEcxN?"> video </a>demo to show zoom/alpha changing via keybinds
 
