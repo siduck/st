@@ -2,7 +2,7 @@
 
 ## Xresources live-reload demo
 
-<img src="https://github.com/siduck76/dotfiles/blob/all/rice%20flex/live-reloadXresources.gif"> <br><br>
+<img src="https://github.com/siduck/dotfiles/blob/all/rice%20flex/live-reloadXresources.gif"> <br><br>
 
 ## Dependencies
 
@@ -21,7 +21,7 @@ apt install build-essential libxft-dev libharfbuzz-dev
 ## Install
 
 ```
-git clone https://github.com/siduck76/st.git
+git clone https://github.com/siduck/st.git
 cd st
 sudo make install 
 xrdb merge pathToXresourcesFile
@@ -63,9 +63,9 @@ alias rel="xrdb merge pathToXresourcesFile && kill -USR1 $(pidof st)"
 ```
 
 ## Ram usage comparison with other terminals and speed test
-<img src="https://raw.githubusercontent.com/siduck76/dotfiles/all/rice%20flex/terminal_ramUsage.jpg"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/dotfiles/all/rice%20flex/speedTest.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/dotfiles/all/rice%20flex/speedTest1.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck/dotfiles/all/rice%20flex/terminal_ramUsage.jpg"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck/dotfiles/all/rice%20flex/speedTest.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck/dotfiles/all/rice%20flex/speedTest1.png"> <br><br>
 
 ( note : This benchmark was done on my low end machine which has a pentium cpu so the speed results might vary )
 
@@ -103,10 +103,10 @@ you can change all of these in config.h
 
 ## Screenshots:
 
-<img src="https://raw.githubusercontent.com/siduck76/personal-backup/all/misc/delete_this/bruh.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/personal-backup/all/misc/delete_this/ithree0-36-43.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/personal-backup/all/misc/delete_this/two7-00.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck76/personal-backup/all/misc/delete_this/u.png"> <br><hr>
+<img src="https://raw.githubusercontent.com/siduck/personal-backup/all/misc/delete_this/bruh.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck/personal-backup/all/misc/delete_this/ithree0-36-43.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck/personal-backup/all/misc/delete_this/two7-00.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck/personal-backup/all/misc/delete_this/u.png"> <br><hr>
 
 # Credits
 
@@ -120,4 +120,4 @@ you can change all of these in config.h
 
 - Use a different st build ( clone its branch)
 
-`example: git clone https://github.com/siduck76/st --branch sixel`
+`example: git clone https://github.com/siduck/st --branch sixel`
