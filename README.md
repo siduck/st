@@ -103,10 +103,10 @@ you can change all of these in config.h
 
 ## Screenshots:
 
-<img src="https://raw.githubusercontent.com/siduck/personal-backup/all/misc/delete_this/bruh.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck/personal-backup/all/misc/delete_this/ithree0-36-43.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck/personal-backup/all/misc/delete_this/two7-00.png"> <br><br>
-<img src="https://raw.githubusercontent.com/siduck/personal-backup/all/misc/delete_this/u.png"> <br><hr>
+<img src="https://raw.githubusercontent.com/siduck/dotfiles/all/misc/delete_this/bruh.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck/dotfiles/all/misc/delete_this/ithree0-36-43.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck/dotfiles/all/misc/delete_this/two7-00.png"> <br><br>
+<img src="https://raw.githubusercontent.com/siduck/dotfiles/all/misc/delete_this/u.png"> <br><hr>
 
 # Credits
 
