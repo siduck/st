@@ -15,7 +15,7 @@ apt install build-essential libxft-dev libharfbuzz-dev
 
 (most of these are already installed on Arch based distros)
 
-# Install font-symbola too
+# Install font-symbola and libXft-bgra
 ```
 
 ## Install
