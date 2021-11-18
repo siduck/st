@@ -117,6 +117,7 @@ you can change all of these in config.h
 
 1. Sixel St (sixel branch , with sixel graphics support)
 2. St with vim-browse (vim-browse branch , navigate within like vim)
+3. Awesomewm users might face a weird gaps issue (#23) so they need to use the anysize branch.
 
 - Use a different st build ( clone its branch)
 
