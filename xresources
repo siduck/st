@@ -1,5 +1,4 @@
-!-- Xft settings -- ! you dont even need this probably 
-
+ !- gruvbox material hard
 Xft.antialias:	1
 Xft.hinting:	1
 Xft.autohint:	0
@@ -7,47 +6,45 @@ Xft.hintstyle:	hintslight
 Xft.rgba:	rgb
 Xft.lcdfilter:	lcddefault
 
-! transparency ( 0.1 to 0.9 values)
-st.alpha: 0.8 
+st.font:         JetBrainsMono Nerd Font:style:medium:pixelsize=14
 
-! inner padding
-st.borderpx:          15
-st.font:         JetBrainsMono Nerd Font:style:medium:pixelsize=15
+! window padding
+st.borderpx: 0
 
-!! Colors
+!- 0.1 to 0.9 = transparency
+st.alpha: 1.0
 
-!! Dracula  palette
-*.foreground: #F8F8F2
-*.background: #282A36
+*background: #1e2122
+*foreground: #d4be98
 
-!! black + grey
-*.color0:     #000000
-*.color8:     #4D4D4D
+! Black + DarkGrey
+*color0:  #282b2c
+*color8:  #32302f
 
-!! dark red + red
-*.color1:     #FF5555
-*.color9:     #FF6E67
+! DarkRed + Red
+*color1:  #df736d
+*color9:  #d1807b
 
-!! green
-*.color2:     #50FA7B
-*.color10:    #5AF78E
+! DarkGreen + Green
+*color2:  #a8b467
+*color10: #a5b06b
 
-!! yellow
-*.color3:     #F1FA8C
-*.color11:    #F4F99D
+! DarkYellow + Yellow
+*color3:  #d28e63
+*color11: #ccb380
 
-!! purple
-*.color4:     #BD93F9
-*.color12:    #CAA9FA
+! DarkBlue + Blue
+*color4:  #6d8dad
+*color12: #748faa
 
-!! pink
-*.color5:     #FF79C6
-*.color13:    #FF92D0
+! DarkMagenta + Magenta
+*color5:  #d0899d
+*color13: #cb8e9e
 
-!! cyan
-*.color6:     #8BE9FD
-*.color14:    #9AEDFE
+! DarkCyan + Cyan
+*color6:  #8dae88
+*color14: #89b482
 
-!! white
-*.color7:     #BFBFBF
-*.color15:    #E6E6E6
+! LightGrey + White
+*color7:  #c0b6a4
+*color15: #c5b89f
