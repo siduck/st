@@ -35,7 +35,6 @@ xrdb merge pathToXresourcesFile
 
 ## Patches:
 
-- alpha 
 - Ligatures
 - sixel (check sixel branch)
 - scrollback
