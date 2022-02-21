@@ -1681,6 +1681,7 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og, Line line, int le
 		case 7: /* Blinking st cursor */
 			if (IS_SET(MODE_BLINK))
 				break;
+        }
 	} else {
 		XftDrawRect(xw.draw, &drawcol,
 				borderpx + cx * win.cw,
@@ -2187,7 +2188,7 @@ xrdb_load(void)
 		XRESOURCE_LOAD_INTEGER("bellvolume", bellvolume);
 		XRESOURCE_LOAD_INTEGER("borderpx", borderpx);
 		/* XRESOURCE_LOAD_INTEGER("borderless", borderless); */
-		XRESOURCE_LOAD_INTEGER("cursorstyle", cursorstyle);
+		XRESOURCE_LOAD_INTEGER("cursorshape", cursorshape);
 
 		/* cursorblinkstate = 1; // in case if cursor shape was changed from a blinking one to a non-blinking */
 		/* XRESOURCE_LOAD_INTEGER("cursorthickness", cursorthickness); */
@@ -2298,7 +2299,7 @@ main(int argc, char *argv[])
 {
 	xw.l = xw.t = 0;
 	xw.isfixed = False;
-	xsetcursor(cursorstyle);
+	xsetcursor(cursorshape);
 
 	ARGBEGIN {
 	case 'a':
