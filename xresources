@@ -1,4 +1,3 @@
- !- gruvbox material hard
 Xft.antialias:	1
 Xft.hinting:	1
 Xft.autohint:	0
@@ -6,45 +5,45 @@ Xft.hintstyle:	hintslight
 Xft.rgba:	rgb
 Xft.lcdfilter:	lcddefault
 
-st.font:         JetBrainsMono Nerd Font:style:medium:pixelsize=14
+st.font:         JetBrainsMono Nerd Font:style:medium:pixelsize=13
 
 ! window padding
-st.borderpx: 0
+st.borderpx: 20
 
 !- 0.1 to 0.9 = transparency
 st.alpha: 1.0
 
-*background: #1e2122
-*foreground: #d4be98
+*background: #181f21
+*foreground: #dadada
 
 ! Black + DarkGrey
-*color0:  #282b2c
-*color8:  #32302f
+*color0:  #22292b
+*color8:  #575e60
 
 ! DarkRed + Red
-*color1:  #df736d
-*color9:  #d1807b
+*color1:  #e06e6e
+*color9:  #ef7d7d
 
 ! DarkGreen + Green
-*color2:  #a8b467
-*color10: #a5b06b
+*color2:  #8ccf7e
+*color10: #9bdead
 
 ! DarkYellow + Yellow
-*color3:  #d28e63
-*color11: #ccb380
+*color3:  #e5c76b
+*color11: #f4d67a
 
 ! DarkBlue + Blue
-*color4:  #6d8dad
-*color12: #748faa
+*color4:  #67b0e8
+*color12: #6cb5ed
 
 ! DarkMagenta + Magenta
-*color5:  #d0899d
-*color13: #cb8e9e
+*color5:  #c47fd5
+*color13: #ce89df
 
 ! DarkCyan + Cyan
-*color6:  #8dae88
-*color14: #89b482
+*color6:  #6da4cd
+*color14: #67cbe7
 
 ! LightGrey + White
-*color7:  #c0b6a4
-*color15: #c5b89f
+*color7:  #b3b9b8
+*color15: #bdc3c2
