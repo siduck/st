@@ -61,7 +61,7 @@ typedef struct {
 /* X modifiers */
 #define XK_ANY_MOD    UINT_MAX
 #define XK_NO_MOD     0
-#define XK_SWITCH_MOD (1<<13)
+#define XK_SWITCH_MOD (1<<13|1<<14)
 
 /* function definitions used in config.h */
 static void clipcopy(const Arg *);
@@ -90,6 +90,8 @@ typedef XftDraw *Draw;
 typedef XftColor Color;
 typedef XftGlyphFontSpec GlyphFontSpec;
 
+typedef unsigned long int CARD32;
+
 /* Purely graphic info */
 typedef struct {
 	int tw, th; /* tty width and height */
@@ -108,7 +110,7 @@ typedef struct {
 	Window win;
 	Drawable buf;
 	GlyphFontSpec *specbuf; /* font spec buffer used for rendering */
-	Atom xembed, wmdeletewin, netwmname, netwmpid;
+       	Atom xembed, wmdeletewin, netwmname, netwmicon, netwmiconname, netwmpid;
 	XIM xim;
 	XIC xic;
 	Draw draw;
@@ -167,7 +169,7 @@ static void xresize(int, int);
 static void xhints(void);
 static int xloadcolor(int, const char *, Color *);
 static int xloadfont(Font *, FcPattern *);
-static void xloadfonts(char *, double);
+static void xloadfonts(const char *, double);
 static int xloadsparefont(FcPattern *, int);
 static void xloadsparefonts(void);
 static void xunloadfont(Font *);
@@ -412,6 +414,8 @@ mousereport(XEvent *e)
 		} else {
 			button -= Button1;
 			if (button >= 3)
+			button += 128 - 7;
+			else if (button >= 3)
 				button += 64 - 3;
 		}
 		if (e->xbutton.type == ButtonPress) {
@@ -858,8 +862,8 @@ xclearwin(void)
 void
 xhints(void)
 {
-	XClassHint class = {opt_name ? opt_name : "st",
-	                    opt_class ? opt_class : "St"};
+	XClassHint class = {opt_name ? opt_name : termname,
+	                    opt_class ? opt_class : termname};
 	XWMHints wm = {.flags = InputHint, .input = 1};
 	XSizeHints *sizeh;
 
@@ -980,7 +984,7 @@ xloadfont(Font *f, FcPattern *pattern)
 }
 
 void
-xloadfonts(char *fontstr, double fontsize)
+xloadfonts(const char *fontstr, double fontsize)
 {
 	FcPattern *pattern;
 	double fontval;
@@ -988,7 +992,7 @@ xloadfonts(char *fontstr, double fontsize)
 	if (fontstr[0] == '-')
 		pattern = XftXlfdParse(fontstr, False, False);
 	else
-		pattern = FcNameParse((FcChar8 *)fontstr);
+          pattern = FcNameParse((const FcChar8 *)fontstr);
 
 	if (!pattern)
 		die("can't open font %s\n", fontstr);
@@ -1304,7 +1308,42 @@ xinit(int cols, int rows)
 	xw.xembed = XInternAtom(xw.dpy, "_XEMBED", False);
 	xw.wmdeletewin = XInternAtom(xw.dpy, "WM_DELETE_WINDOW", False);
 	xw.netwmname = XInternAtom(xw.dpy, "_NET_WM_NAME", False);
+        xw.netwmiconname = XInternAtom(xw.dpy, "_NET_WM_ICON_NAME", False);
 	XSetWMProtocols(xw.dpy, xw.win, &xw.wmdeletewin, 1);
+
+	/* use a png-image to set _NET_WM_ICON */
+	FILE* file = fopen(ICON, "r");
+	if (file) {
+		/* inititialize variables */
+		const gdImagePtr icon_rgba = gdImageCreateFromPng(file);
+		fclose(file);
+		const int width = gdImageSX(icon_rgba);
+		const int height = gdImageSY(icon_rgba);
+		const int icon_n = width * height + 2;
+		CARD32 *icon_argb = g_new0(CARD32, icon_n);
+		/* set width and height of the icon */
+		int i = 0;
+		icon_argb[i++] = width;
+		icon_argb[i++] = height;
+		/* RGBA -> ARGB */
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				const int pixel_rgba = gdImageGetPixel(icon_rgba, x, y);
+				guint8* pixel_argb = (guint8*) &icon_argb[i++];
+				pixel_argb[0] = gdImageBlue(icon_rgba, pixel_rgba);
+				pixel_argb[1] = gdImageGreen(icon_rgba, pixel_rgba);
+				pixel_argb[2] = gdImageRed(icon_rgba, pixel_rgba);
+				/* scale alpha from 0-127 to 0-255 */
+				const int alpha = 127 - gdImageAlpha(icon_rgba, pixel_rgba);
+				pixel_argb[3] = alpha == 127 ? 255 : alpha * 2;
+			}
+		}
+		gdImageDestroy(icon_rgba);
+		/* set _NET_WM_ICON */
+		xw.netwmicon = XInternAtom(xw.dpy, "_NET_WM_ICON", False);
+		XChangeProperty(xw.dpy, xw.win, xw.netwmicon, XA_CARDINAL, 32,
+				PropModeReplace, (uchar *)icon_argb, icon_n);
+	}
 
 	xw.netwmpid = XInternAtom(xw.dpy, "_NET_WM_PID", False);
 	XChangeProperty(xw.dpy, xw.win, xw.netwmpid, XA_CARDINAL, 32,
@@ -1712,13 +1751,28 @@ xsetenv(void)
 }
 
 void
+xseticontitle(char *p)
+{
+	XTextProperty prop;
+	DEFAULT(p, opt_title);
+
+        if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
+	                                &prop) != Success)
+		return;
+	XSetWMIconName(xw.dpy, xw.win, &prop);
+	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmiconname);
+	XFree(prop.value);
+}
+
+void
 xsettitle(char *p)
 {
 	XTextProperty prop;
 	DEFAULT(p, opt_title);
 
-	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
-			&prop);
+        if (Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
+	                                &prop) != Success)
+		return;
 	XSetWMName(xw.dpy, xw.win, &prop);
 	XSetTextProperty(xw.dpy, xw.win, &prop, xw.netwmname);
 	XFree(prop.value);
@@ -2241,9 +2295,9 @@ resource_load(XrmDatabase db, char *name, enum resource_type rtype, void *dst)
 	XrmValue ret;
 
 	snprintf(fullname, sizeof(fullname), "%s.%s",
-			opt_name ? opt_name : "st", name);
+			opt_name ? opt_name : termname, name);
 	snprintf(fullclass, sizeof(fullclass), "%s.%s",
-			opt_class ? opt_class : "St", name);
+			opt_class ? opt_class : termname, name);
 	fullname[sizeof(fullname) - 1] = fullclass[sizeof(fullclass) - 1] = '\0';
 
 	XrmGetResource(db, fullname, fullclass, &type, &ret);

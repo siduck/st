@@ -5,3 +5,4 @@ Comment=simple-terminal emulator for X
 Icon=utilities-terminal
 Exec=st
 Categories=System;TerminalEmulator
+StartupWMClass=st-256color

@@ -111,13 +111,3 @@ you can change all of these in config.h
 
 - [live-reload](https://github.com/nimaipatel/st) 
 - [patch_column](https://github.com/nimaipatel/st/blob/all/patches/7672445bab01cb4e861651dc540566ac22e25812.diff)
-
-## Other St builds <br>
-
-1. Sixel St (sixel branch , with sixel graphics support)
-2. St with vim-browse (vim-browse branch , navigate within like vim)
-3. Awesomewm users might face a weird gaps issue (#23) so they need to use the anysize branch.
-
-- Use a different st build ( clone its branch)
-
-`example: git clone https://github.com/siduck/st --branch sixel`
