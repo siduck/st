@@ -110,7 +110,7 @@ typedef struct {
 	Window win;
 	Drawable buf;
 	GlyphFontSpec *specbuf; /* font spec buffer used for rendering */
-       	Atom xembed, wmdeletewin, netwmname, netwmicon, netwmiconname, netwmpid;
+     	Atom xembed, wmdeletewin, netwmname, netwmicon, netwmiconname, netwmpid;
 	XIM xim;
 	XIC xic;
 	Draw draw;
@@ -414,7 +414,8 @@ mousereport(XEvent *e)
 		} else {
 			button -= Button1;
 			if (button >= 3)
-			button += 128 - 7;
+                           if (button >= 7)
+				button += 128 - 7;
 			else if (button >= 3)
 				button += 64 - 3;
 		}
@@ -862,8 +863,8 @@ xclearwin(void)
 void
 xhints(void)
 {
-	XClassHint class = {opt_name ? opt_name : termname,
-	                    opt_class ? opt_class : termname};
+	XClassHint class = {opt_name ? opt_name : "st",
+	                    opt_class ? opt_class : "St"};
 	XWMHints wm = {.flags = InputHint, .input = 1};
 	XSizeHints *sizeh;
 
@@ -992,7 +993,7 @@ xloadfonts(const char *fontstr, double fontsize)
 	if (fontstr[0] == '-')
 		pattern = XftXlfdParse(fontstr, False, False);
 	else
-          pattern = FcNameParse((const FcChar8 *)fontstr);
+               pattern = FcNameParse((const FcChar8 *)fontstr);
 
 	if (!pattern)
 		die("can't open font %s\n", fontstr);
@@ -2295,9 +2296,9 @@ resource_load(XrmDatabase db, char *name, enum resource_type rtype, void *dst)
 	XrmValue ret;
 
 	snprintf(fullname, sizeof(fullname), "%s.%s",
-			opt_name ? opt_name : termname, name);
+			opt_name ? opt_name : "st", name);
 	snprintf(fullclass, sizeof(fullclass), "%s.%s",
-			opt_class ? opt_class : termname, name);
+			opt_class ? opt_class : "St", name);
 	fullname[sizeof(fullname) - 1] = fullclass[sizeof(fullclass) - 1] = '\0';
 
 	XrmGetResource(db, fullname, fullclass, &type, &ret);

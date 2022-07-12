@@ -288,9 +288,9 @@ xrealloc(void *p, size_t len)
 char *
 xstrdup(const char *s)
 {
-  char *p;
+        char *p;
 
-    if ((p = strdup(s)) == NULL)
+	if ((p = strdup(s)) == NULL)
 		die("strdup: %s\n", strerror(errno));
 
 	return p;
@@ -819,7 +819,7 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
 		if (ioctl(s, TIOCSCTTY, NULL) < 0)
 			die("ioctl TIOCSCTTY failed: %s\n", strerror(errno));
                 if (s > 2)
-			close(s);
+                   close(s);
 #ifdef __OpenBSD__
 		if (pledge("stdio getpw proc exec", NULL) == -1)
 			die("pledge\n");
@@ -1292,7 +1292,7 @@ tmoveto(int x, int y)
 }
 
 void
-tsetchar(Rune u, const Glyph *attr, int x, int y)
+tsetchar(Rune u,const Glyph *attr, int x, int y)
 {
 	static const char *vt100_0[62] = { /* 0x41 - 0x7e */
 		"↑", "↓", "→", "←", "█", "▚", "☃", /* A - G */
@@ -1577,7 +1577,7 @@ tsetscroll(int t, int b)
 }
 
 void
-tsetmode(int priv, int set, const int *args, int narg)
+tsetmode(int priv, int set,const int *args, int narg)
 {
         int alt; const int *lim;
 
@@ -1956,7 +1956,7 @@ strhandle(void)
 	case ']': /* OSC -- Operating System Command */
 		switch (par) {
 		case 0:
-                  if (narg > 1) {
+                   if (narg > 1) {
 				xsettitle(strescseq.args[1]);
 				xseticontitle(strescseq.args[1]);
 			}
@@ -2627,7 +2627,7 @@ check_control_code:
 	if (width == 2) {
 		gp->mode |= ATTR_WIDE;
 		if (term.c.x+1 < term.col) {
-                  if (gp[1].mode == ATTR_WIDE && term.c.x+2 < term.col) {
+                   if (gp[1].mode == ATTR_WIDE && term.c.x+2 < term.col) {
 				gp[2].u = ' ';
 				gp[2].mode &= ~ATTR_WDUMMY;
 			}

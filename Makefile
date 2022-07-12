@@ -65,7 +65,7 @@ uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/st-copyout
 	rm -f $(DESTDIR)$(PREFIX)/bin/st-urlhandler
 	rm -f $(DESTDIR)$(MANPREFIX)/man1/st.1
-	rm -f $(DESTDIR)$(PREFIX)/share/applications/st.desktop
 	rm -f $(DESTDIR)$(ICONPREFIX)/$(ICONNAME)
+	rm -f $(DESTDIR)$(PREFIX)/share/applications/st.desktop
 
 .PHONY: all options clean dist install uninstall

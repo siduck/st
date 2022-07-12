@@ -2,7 +2,7 @@
 Type=Application
 Name=st
 Comment=simple-terminal emulator for X
-Icon=utilities-terminal
+Icon=st
 Exec=st
 Categories=System;TerminalEmulator
 StartupWMClass=st-256color
