@@ -1,5 +1,5 @@
 {
-  description = "Flake utils demo";
+  description = "snazzy terminal (suckless + lightweight)";
 
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
