@@ -12,7 +12,10 @@
           st-snazzy = pkgs.callPackage ./default.nix { };
         };
         defaultPackage = packages.st-snazzy;
-        apps.st-snazzy = flake-utils.lib.mkApp { drv = packages.st-snazzy; };
+        apps.st-snazzy = flake-utils.lib.mkApp {
+          drv = packages.st-snazzy;
+          exePath = "/bin/st";
+        };
         defaultApp = apps.st-snazzy;
         devShell = pkgs.mkShell rec {
           name = "st-snazzy";
