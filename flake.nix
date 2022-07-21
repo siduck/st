@@ -16,6 +16,7 @@
           drv = packages.st-snazzy;
           exePath = "/bin/st";
         };
+        apps.default = apps.st-snazzy;
         defaultApp = apps.st-snazzy;
         devShell = pkgs.mkShell rec {
           name = "st-snazzy";
