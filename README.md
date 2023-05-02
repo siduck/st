@@ -11,7 +11,7 @@
 xbps-install libXft-devel libX11-devel harfbuzz-devel libXext-devel libXrender-devel libXinerama-devel
 
 # Debian (and ubuntu probably)
-apt install build-essential libxft-dev libharfbuzz-dev
+apt install build-essential libxft-dev libharfbuzz-dev libgd-dev
 
 # Nix
 nix develop github:siduck/st
@@ -80,7 +80,7 @@ alias rel="xrdb merge pathToXresourcesFile && kill -USR1 $(pidof st)"
 <img src="https://raw.githubusercontent.com/siduck/dotfiles/all/rice%20flex/speedTest.png"> <br><br>
 <img src="https://raw.githubusercontent.com/siduck/dotfiles/all/rice%20flex/speedTest1.png"> <br><br>
 
-( note : This benchmark was done on my low end machine which has a pentium cpu so the speed results might vary )
+( note : This benchmark was done on my low-end machine which has a pentium cpu so the speed results might vary )
 
 ## Default Keybindings<br>
 
@@ -111,7 +111,7 @@ you can change all of these in config.h
 ## Themes/Fonts used
 
 - ls-icons: https://github.com/Yash-Handa/logo-ls <br>
-- Xresources: onedark ( just xrdb merge xresourcesfile , do this everytime you make any change to xresources file ) from this repo itself.<br>
+- Xresources: onedark (just `xrdb merge xresourcesfile`, do this everytime you make any change to xresources file) from this repo itself.<br>
 - Font: JetbrainsMono Nerd Font + material design icon fonts
 
 ## Screenshots:
