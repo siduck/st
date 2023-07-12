@@ -16,7 +16,8 @@ apt install build-essential libxft-dev libharfbuzz-dev libgd-dev
 # Nix
 nix develop github:siduck/st
 
-(most of these are already installed on Arch based distros)
+# Arch
+pacman -S gd
 
 # Install font-symbola and libXft-bgra
 ```
