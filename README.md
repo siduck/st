@@ -19,6 +19,9 @@ nix develop github:siduck/st
 # Arch
 pacman -S gd
 
+# Fedora (or Red-Hat based)
+dnf install gd-devel libXft-devel
+
 # Install font-symbola and libXft-bgra
 ```
 
