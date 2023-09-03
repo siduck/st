@@ -22,6 +22,10 @@ pacman -S gd
 # Fedora (or Red-Hat based)
 dnf install gd-devel libXft-devel
 
+# SUSE (or openSUSE)
+zypper in -t pattern devel_basis
+zypper in gd-devel libXft-devel harfbuzz-devel
+
 # Install font-symbola and libXft-bgra
 ```
 
@@ -36,6 +40,7 @@ To do so, simply run (requires [Nix](https://nixos.org/download.html))
 ```
 git clone https://github.com/siduck/st.git
 cd st
+(openSUSE only: sed -i 's/^#\ CC\ =\ c99/CC=gcc/' config.mk)
 sudo make install
 xrdb merge pathToXresourcesFile
 ```
