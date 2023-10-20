@@ -40,7 +40,7 @@ To do so, simply run (requires [Nix](https://nixos.org/download.html))
 ```
 git clone https://github.com/siduck/st.git
 cd st
-(openSUSE only: sed -i 's/^#\ CC\ =\ c99/CC=gcc/' config.mk)
+(change the compiler if you cant use c99 to compile: sed -i 's/^#\ CC\ =\ c99/CC=gcc/' config.mk)
 sudo make install
 xrdb merge pathToXresourcesFile
 ```
