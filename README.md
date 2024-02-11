@@ -8,7 +8,7 @@
 
 ```
 # Void
-xbps-install libXft-devel libX11-devel harfbuzz-devel libXext-devel libXrender-devel libXinerama-devel
+xbps-install libXft-devel libX11-devel harfbuzz-devel libXext-devel libXrender-devel libXinerama-devel gd-devel
 
 # Debian (and ubuntu probably)
 apt install build-essential libxft-dev libharfbuzz-dev libgd-dev
