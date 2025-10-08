@@ -4,6 +4,7 @@ Xft.autohint:	0
 Xft.hintstyle:	hintslight
 Xft.rgba:	rgb
 Xft.lcdfilter:	lcddefault
+! needed if cursor is already installed
 Xcursor.theme: Fuchsia
 
 st.font:         JetBrainsMono Nerd Font:style:medium:pixelsize=14
