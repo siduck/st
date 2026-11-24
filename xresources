@@ -4,14 +4,16 @@ Xft.autohint:	0
 Xft.hintstyle:	hintslight
 Xft.rgba:	rgb
 Xft.lcdfilter:	lcddefault
+! needed if cursor is already installed
+Xcursor.theme: Fuchsia
 
-st.font:         JetBrainsMono Nerd Font:style:medium:pixelsize=13
+st.font:         JetBrainsMono Nerd Font:style:medium:pixelsize=14
 
 ! window padding
-st.borderpx: 20
+st.borderpx: 10
 
 !- 0.1 to 0.9 = transparency
-st.alpha: 1.0
+st.alpha: 0.8
 
 *background: #181f21
 *foreground: #dadada
